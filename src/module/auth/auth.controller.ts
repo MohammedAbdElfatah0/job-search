@@ -1,10 +1,15 @@
-import { Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post } from "@nestjs/common";
+import { RegisterAuthDto } from "./dto/register-auth.dto";
 
 @Controller('auth')
 export class AuthController {
-    constructor() { }
+    constructor(
+        private readonly 
+    ) { }
     //logic
 
     @Post('register')
-    register(){}
+    register(@Body() registerDto: RegisterAuthDto) {
+
+     }
 }
