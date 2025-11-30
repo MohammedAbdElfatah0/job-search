@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsObject, IsString, Min } from "class-validator";
-import { USER_GENDER, USER_PROVIDER, USER_ROLE } from "src/common";
+import { IsAdult, USER_GENDER, USER_PROVIDER, USER_ROLE } from "src/common";
 
 export class RegisterAuthDto {
     @Min(3, { message: "First name must be at least 3 characters long" })
@@ -40,7 +40,7 @@ export class RegisterAuthDto {
 
     @IsDate()
     @Type(() => Date)
-    // @IsAdult()
+    @IsAdult()
     dob: Date;
 
     @IsString({ message: "Mobile number must be a string" })
