@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import configLoad from './config/env/env.dev';
 import { AuthModule } from './module';
+import { CommenModule } from './shared/module/commen.module';
 
 @Module({
   imports: [
@@ -21,8 +22,8 @@ import { AuthModule } from './module';
         uri: configService.get("db").url,
       })
     }),
-
-    AuthModule
+    AuthModule,
+    CommenModule,
   ],
   controllers: [],
   providers: [],

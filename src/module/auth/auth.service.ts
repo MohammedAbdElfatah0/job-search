@@ -1,14 +1,17 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-import { compereHash, confirmEmailTemplate, generatedHash, generateExpiryTime, generateOtp, resetPasswordTemplate, sendEmailHelper, typeOtp } from "src/common";
-import { UserDocument, UserRepository } from "src/DB";
-import { User } from "./entities";
-import { LoginDto } from "./dto";
-import { ResetPasswordDto } from "./dto/reset_password-auth.dto";
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { Types } from "mongoose";
+import { compereHash, generatedHash, generateExpiryTime, generateOtp, resetPasswordTemplate, sendEmailHelper, typeOtp, typeToken } from "src/common";
+import { TokenRepository, UserDocument, User as UserModel, UserRepository } from "src/DB";
+import { LoginDto, ResetPasswordDto } from "./dto";
+import { User as UserEntity } from "./entities";
+import { TokenService } from "../token";
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly userRepository: UserRepository,
+        private readonly tokenService: TokenService,
+        private readonly tokenRepo: TokenRepository,
     ) { }
     private async getUser(email: string) {
         return await this.userRepository.getOne({ email });
@@ -36,8 +39,13 @@ export class AuthService {
         }
 
     }
+    private async AccessAndRefreshToken({ id, payload }: { id: Types.ObjectId, payload: Partial<UserModel> }) {
+        const accessToken = this.tokenService.generateAccessToken(payload);
+        const refreshToken = await this.tokenService.generateRefreshToken(id, payload);
+        return { accessToken, refreshToken };
+    }
 
-    public async register(user: User): Promise<{ userName: string, email: string, mobileNumber: string, role: string, dob: Date }> {
+    public async register(user: UserEntity): Promise<{ userName: string, email: string, mobileNumber: string, role: string, dob: Date }> {
         //get user 
         const userExist = await this.userRepository.getOne({ email: user.email });
         //check user exsit?
@@ -136,6 +144,24 @@ export class AuthService {
             throw new BadRequestException('Invalid credentials');
         }
         //todo genereta token
-        return 'done login';
+        return await this.AccessAndRefreshToken({
+            id: userExist.id,
+            payload: {
+                email: loginDto.email
+            }
+        })
+
+    }
+    public async refreshToken(token: string) {
+        let payload: UserModel;
+        try {
+            payload = this.tokenService.verifyToken(token, typeToken.refresh);
+        } catch (err) {
+            throw new UnauthorizedException('Invalid refresh token');
+        }
+        const dbToken = await this.tokenRepo.getOne({ token: token });
+        if (!dbToken || dbToken.isRevoked) throw new UnauthorizedException('Refresh token revoked');
+        const accessToken = this.tokenService.generateAccessToken({ _id: payload._id });
+        return { accessToken };
     }
 }

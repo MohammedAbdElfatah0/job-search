@@ -18,3 +18,7 @@ export enum typeOtp {
     confirmEmail = 'confirmEmail',
     forgetPassword = 'forgetPassword'
 }
+export enum typeToken {
+    access = 'access',
+    refresh = "refresh"
+}

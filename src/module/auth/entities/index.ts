@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { SEND_TYPE, USER_GENDER, USER_PROVIDER } from "src/common";
+import { SEND_TYPE, USER_GENDER, USER_PROVIDER, USER_ROLE } from "src/common";
 
 export class User {
     readonly _id: Types.ObjectId;
@@ -7,12 +7,13 @@ export class User {
     lastName: string;
     email: string;
     password: string;
-    role: string;
+    role: USER_ROLE;
     updatedAt: Date;
     gneder: USER_GENDER;
     provider: USER_PROVIDER;
     dob: Date;
     isConfirmed: boolean;
+
     mobileNumber: string
     deletedAt: Date;
     bannedAt: Date;

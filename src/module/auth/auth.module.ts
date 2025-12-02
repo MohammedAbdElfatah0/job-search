@@ -5,8 +5,8 @@ import { AuthService } from "./auth.service";
 import { AuthFactory } from "./factory";
 
 @Module({
-    imports:[UserModule],
+    imports: [UserModule],
     controllers: [AuthController],
-    providers: [AuthService,AuthFactory,UserRepository],
+    providers: [AuthService, AuthFactory, UserRepository],
 })
 export class AuthModule { }

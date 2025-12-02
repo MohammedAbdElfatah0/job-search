@@ -5,6 +5,7 @@ import { confirmEmailTemplate, CryptoHelper, generatedHash, sendEmailHelper, typ
 
 @Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class User {
+    readonly _id: Types.ObjectId;
     @Prop({ type: String, required: true, trim: true })
     firstName: string;
 

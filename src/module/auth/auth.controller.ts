@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Headers, Patch, Post, Put } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { ConfirmEmailDto, LoginDto, RegisterAuthDto, ResendOtpDto } from "./dto";
 import { User } from "./entities";
@@ -50,11 +50,24 @@ export class AuthController {
     }
     @Post('login')
     public async login(@Body() loginDto: LoginDto) {
-        const message = await this.authService.login(loginDto);
+        const data = await this.authService.login(loginDto);
         return {
-            message,
+            message: "Login Successfully",
             success: true,
+            data
         }
+    }
+    @Put('/refresh-token')
+    public async refreshToken(@Headers('Authorization') authorization: string) {
+        if (!authorization) {
+            throw new BadRequestException("Authorization header is missing");
+        }
+        const { accessToken } = await this.authService.refreshToken(authorization);
+        return {
+            message: "token refreshed successfully",
+            data: { accessToken }
+        }
+
     }
 
 
