@@ -1,6 +1,7 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { MongooseModule, Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { USER_GENDER, USER_PROVIDER, USER_ROLE } from 'src/common';
+import { generateExpiryTime, generateOtp, USER_GENDER, USER_PROVIDER, USER_ROLE } from 'src/common';
+import { confirmEmailTemplate, CryptoHelper, generatedHash, sendEmailHelper } from 'src/common/utils';
 
 @Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class User {
@@ -10,16 +11,17 @@ export class User {
     @Prop({ type: String, required: true, trim: true })
     lastName: string;
 
-
-    get userName() {
-        return `${this.firstName} ${this.lastName}`;
-    }
-
-    set userName(value: string) {
-        const [first, last] = value.split(' ');
-        this.firstName = first;
-        this.lastName = last;
-    }
+    @Virtual({
+        get: function () {
+            return `${this.firstName} ${this.lastName}`;
+        },
+        set: function (value: string) {
+            const [first, last] = value.split(' ');
+            this.firstName = first as string;
+            this.lastName = last as string;
+        }
+    })
+    userName: string;
 
     @Prop({ type: String, required: true, unique: true, trim: true })
     email: string;
@@ -47,11 +49,32 @@ export class User {
             },
             message: 'Age must be at least 18 years old',
         },
+         get: (value: Date) => {
+        if (!value) return value;
+
+        const day = value.getDate().toString().padStart(2, '0');
+        const month = (value.getMonth() + 1).toString().padStart(2, '0');
+        const year = value.getFullYear();
+
+        return `${day}/${month}/${year}`;
+    },
     })
     dob: Date;
-
-    @Prop({ type: String, required: true })
-    mobileNumber: string;
+    @Prop({
+        type: {
+            content: String,
+            iv: String,
+        },
+        _id: false,
+        get: (value) => {
+            if (!value) return null;
+            return CryptoHelper.decrypt(value);
+        },
+        set: (value: string) => {
+            return CryptoHelper.encrypt(value);
+        },
+    })
+    mobileNumber:  string;
 
     @Prop({ type: Boolean, default: false })
     isConfirmed: boolean;
@@ -73,6 +96,7 @@ export class User {
             secure_url: String,
             public_id: String,
         },
+        _id: false
     })
     profilePic: {
         secure_url: string;
@@ -84,6 +108,7 @@ export class User {
             secure_url: String,
             public_id: String,
         },
+        _id: false
     })
     coverPic: {
         secure_url: string;
@@ -95,8 +120,10 @@ export class User {
             code: String, // hashed OTP
             type: { type: String, enum: ['confirmEmail', 'forgetPassword'] },
             expiresIn: Date,
+            _id: false
         },
-    ])
+
+    ],)
     otp: {
         code: string;
         type: 'confirmEmail' | 'forgetPassword';
@@ -106,3 +133,24 @@ export class User {
 
 export type UserDocument = User & Document;
 export const UserSchema = SchemaFactory.createForClass(User);
+UserSchema.pre("save", async function (next) {
+    if (!this.isConfirmed) {
+        const code = generateOtp();
+        const expiresIn = generateExpiryTime(10);
+        //send email confirm email
+        sendEmailHelper({
+            to: this.email,
+            subject: 'Confirm Your Email',
+            html: confirmEmailTemplate(code),
+        });
+        this.otp.push({ code: await generatedHash(code), type: 'confirmEmail', expiresIn });
+
+
+    }
+    next();
+});
+//user module
+export const UserModule = MongooseModule.forFeature([{
+    name: User.name,
+    schema: UserSchema,
+}])

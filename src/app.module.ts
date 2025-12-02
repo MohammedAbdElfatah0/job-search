@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import configLoad from './config/env/env.dev';
+import { AuthModule } from './module';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import configLoad from './config/env/env.dev';
       })
     }),
 
-    
+    AuthModule
   ],
   controllers: [],
   providers: [],

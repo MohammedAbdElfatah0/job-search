@@ -14,7 +14,7 @@ export default () => (
 
         },
         encrypt: {
-            key: process.env.ENCRYPTION_KEY,
+            key: process.env.ENCRYPTION_KEY_HASH,
             saltRounds: process.env.SALTROUNDS
         },
         token: {

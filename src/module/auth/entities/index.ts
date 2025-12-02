@@ -13,7 +13,7 @@ export class User {
     provider: USER_PROVIDER;
     dob: Date;
     isConfirmed: boolean;
-    mobileNumber: string;
+    mobileNumber: string
     deletedAt: Date;
     bannedAt: Date;
     updatedBy: Types.ObjectId;

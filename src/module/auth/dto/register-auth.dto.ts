@@ -1,14 +1,14 @@
 import { Type } from "class-transformer";
-import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsObject, IsString, Min } from "class-validator";
+import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsObject, IsString, Length, Max, Min } from "class-validator";
 import { IsAdult, USER_GENDER, USER_PROVIDER, USER_ROLE } from "src/common";
 
 export class RegisterAuthDto {
-    @Min(3, { message: "First name must be at least 3 characters long" })
+    @Length(3, 20, { message: "First name must be at least 3 characters and maximum 20 characters" })
     @IsString({ message: "First name must be a string" })
     @IsNotEmpty({ message: "First name is required" })
     firstName: string;
-
-    @Min(3, { message: "Last name must be at least 3 characters long" })
+    
+    @Length(3, 20, { message: "Last name must be at least 3 characters and maximum 20 characters" })
     @IsString({ message: "Last name must be a string" })
     @IsNotEmpty({ message: "Last name is required" })
     lastName: string;
@@ -18,7 +18,6 @@ export class RegisterAuthDto {
     @IsNotEmpty({ message: "Email is required" })
     email: string;
 
-    @Min(6, { message: "Password must be at least 6 characters long" })
     @IsString({ message: "Password must be a string" })
     @IsNotEmpty({ message: "Password is required" })
     password: string;
@@ -31,39 +30,37 @@ export class RegisterAuthDto {
     @IsEnum(USER_GENDER, { message: `Gender must be a valid gender[${USER_GENDER.MALE} or ${USER_GENDER.FEMALE}]` })
     @IsString({ message: "Gender must be a string" })
     @IsNotEmpty({ message: "Gender is required" })
-    gneder: USER_GENDER;
+    gender: USER_GENDER;
 
-    @IsEnum(USER_PROVIDER, { message: `Provider must be a valid provider[${USER_PROVIDER.SYSTEM} or ${USER_PROVIDER.GOOGLE}]` })
-    @IsString({ message: "Provider must be a string" })
-    @IsNotEmpty({ message: "Provider is required" })
-    provider: USER_PROVIDER;
+
 
     @IsDate()
     @Type(() => Date)
     @IsAdult()
+    @IsNotEmpty({ message: "Date of birth is required" })
     dob: Date;
 
     @IsString({ message: "Mobile number must be a string" })
     @IsNotEmpty({ message: "Mobile number is required" })
     mobileNumber: string;
-    @IsObject({ each: true, message: "Profile picture is Object { secure_url: string; public_id: string; }" })
-    @IsNotEmpty(
-        {
-            message: "Profile picture is required"
-        }
-    )
-    profilePic: {
-        secure_url: string;
-        public_id: string;
-    }
-    @IsObject({ each: true, message: "Cover picture is Object { secure_url: string; public_id: string; }" })
-    @IsNotEmpty(
-        {
-            message: "Cover picture is required"
-        }
-    )
-    coverPic: {
-        secure_url: string;
-        public_id: string;
-    }
+    // @IsObject({ each: true, message: "Profile picture is Object { secure_url: string; public_id: string; }" })
+    // @IsNotEmpty(
+    //     {
+    //         message: "Profile picture is required"
+    //     }
+    // )
+    // profilePic: {
+    //     secure_url: string;
+    //     public_id: string;
+    // }
+    // @IsObject({ each: true, message: "Cover picture is Object { secure_url: string; public_id: string; }" })
+    // @IsNotEmpty(
+    //     {
+    //         message: "Cover picture is required"
+    //     }
+    // )
+    // coverPic: {
+    //     secure_url: string;
+    //     public_id: string;
+    // }
 }
