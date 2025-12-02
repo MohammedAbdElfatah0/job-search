@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Headers, Patch, Post, Put } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Headers, Patch, Post, Put, UsePipes, ValidationPipe } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { ConfirmEmailDto, LoginDto, RegisterAuthDto, ResendOtpDto } from "./dto";
 import { User } from "./entities";
@@ -68,6 +68,30 @@ export class AuthController {
             data: { accessToken }
         }
 
+    }
+    @Post('/google/login')
+    public async googleLogin(@Body('idToken') idToken: string) {
+        if (!idToken) {
+            throw new BadRequestException('id token is required')
+        }
+        const { accessToken, refreshToken } = await this.authService.googleLogin(idToken);
+        return {
+            message: "login with google successfully",
+            data: { accessToken, refreshToken }
+        }
+    }
+    @Patch('logout')
+    @UsePipes(new ValidationPipe({ validateCustomDecorators: true }))
+    public async logout(@Headers('Authorization') authorization: string) {
+        if (!authorization) {
+            throw new BadRequestException("Authorization header is missing");
+        }
+
+
+        const message = await this.authService.logout(authorization);
+        return {
+            message
+        };
     }
 
 

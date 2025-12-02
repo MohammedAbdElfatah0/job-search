@@ -1,18 +1,24 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { Types } from "mongoose";
-import { compereHash, generatedHash, generateExpiryTime, generateOtp, resetPasswordTemplate, sendEmailHelper, typeOtp, typeToken } from "src/common";
+import { compereHash, generatedHash, generateExpiryTime, generateOtp, resetPasswordTemplate, sendEmailHelper, typeOtp, typeToken, USER_PROVIDER } from "src/common";
 import { TokenRepository, UserDocument, User as UserModel, UserRepository } from "src/DB";
 import { LoginDto, ResetPasswordDto } from "./dto";
 import { User as UserEntity } from "./entities";
 import { TokenService } from "../token";
+import { OAuth2Client } from "google-auth-library";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class AuthService {
+    private readonly googleClient: OAuth2Client;
     constructor(
         private readonly userRepository: UserRepository,
         private readonly tokenService: TokenService,
         private readonly tokenRepo: TokenRepository,
-    ) { }
+        private readonly configService: ConfigService,
+    ) {
+        this.googleClient = new OAuth2Client(this.configService.get('google').clientId);
+    }
     private async getUser(email: string) {
         return await this.userRepository.getOne({ email });
     }
@@ -163,5 +169,52 @@ export class AuthService {
         if (!dbToken || dbToken.isRevoked) throw new UnauthorizedException('Refresh token revoked');
         const accessToken = this.tokenService.generateAccessToken({ _id: payload._id });
         return { accessToken };
+    }
+    //login and signup
+    async googleLogin(idToken: string): Promise<{ accessToken: string, refreshToken: string }> {
+
+        try {
+            const ticket = await this.googleClient.verifyIdToken({
+                idToken,
+            });
+
+            const payload = ticket.getPayload();
+            if (!payload) {
+                throw new UnauthorizedException('Invalid Google token payload');
+            }
+
+            const { email, given_name, family_name, email_verified } = payload;
+
+            if (!email_verified) {
+                throw new UnauthorizedException('Google email not verified');
+            }
+
+            let user = await this.userRepository.getOne({ email });
+
+            if (!user) {
+                user = await this.userRepository.create({
+                    email,
+                    firstName: given_name,
+                    lastName: family_name,
+                    provider: USER_PROVIDER.GOOGLE,
+                    isConfirmed: true,
+                });
+                return this.AccessAndRefreshToken({ id: user._id, payload: { _id: user._id } });
+            }
+            return this.AccessAndRefreshToken({ id: user._id, payload: { _id: user._id } });
+        } catch (error) {
+            throw new UnauthorizedException(`Invalid or expired Google token ${error.message}`);
+        }
+    }
+
+
+    public async logout(token: string): Promise<string> {
+
+        const tokenExists = await this.tokenRepo.getOne({ token: token });
+        if (!tokenExists || tokenExists.isRevoked) throw new UnauthorizedException('Invalid refresh token');
+
+        const dbToken = await this.tokenService.revokeRefreshToken(token);
+        if (!dbToken) throw new UnauthorizedException('Invalid refresh token');
+        return 'Logged out successfully';
     }
 }
