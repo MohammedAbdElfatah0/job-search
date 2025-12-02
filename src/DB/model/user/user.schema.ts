@@ -1,7 +1,7 @@
 import { MongooseModule, Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { generateExpiryTime, generateOtp, USER_GENDER, USER_PROVIDER, USER_ROLE } from 'src/common';
-import { confirmEmailTemplate, CryptoHelper, generatedHash, sendEmailHelper } from 'src/common/utils';
+import { confirmEmailTemplate, CryptoHelper, generatedHash, sendEmailHelper, typeOtp } from 'src/common/utils';
 
 @Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class User {
@@ -49,15 +49,15 @@ export class User {
             },
             message: 'Age must be at least 18 years old',
         },
-         get: (value: Date) => {
-        if (!value) return value;
+        get: (value: Date) => {
+            if (!value) return value;
 
-        const day = value.getDate().toString().padStart(2, '0');
-        const month = (value.getMonth() + 1).toString().padStart(2, '0');
-        const year = value.getFullYear();
+            const day = value.getDate().toString().padStart(2, '0');
+            const month = (value.getMonth() + 1).toString().padStart(2, '0');
+            const year = value.getFullYear();
 
-        return `${day}/${month}/${year}`;
-    },
+            return `${day}/${month}/${year}`;
+        },
     })
     dob: Date;
     @Prop({
@@ -74,7 +74,7 @@ export class User {
             return CryptoHelper.encrypt(value);
         },
     })
-    mobileNumber:  string;
+    mobileNumber: string;
 
     @Prop({ type: Boolean, default: false })
     isConfirmed: boolean;
@@ -118,7 +118,7 @@ export class User {
     @Prop([
         {
             code: String, // hashed OTP
-            type: { type: String, enum: ['confirmEmail', 'forgetPassword'] },
+            type: { type: String, enum: typeOtp },
             expiresIn: Date,
             _id: false
         },
@@ -126,7 +126,7 @@ export class User {
     ],)
     otp: {
         code: string;
-        type: 'confirmEmail' | 'forgetPassword';
+        type: typeOtp;
         expiresIn: Date;
     }[];
 }
@@ -143,7 +143,7 @@ UserSchema.pre("save", async function (next) {
             subject: 'Confirm Your Email',
             html: confirmEmailTemplate(code),
         });
-        this.otp.push({ code: await generatedHash(code), type: 'confirmEmail', expiresIn });
+        this.otp.push({ code: await generatedHash(code), type: typeOtp.confirmEmail, expiresIn });
 
 
     }

@@ -1,26 +1,21 @@
 import { Type } from "class-transformer";
-import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsObject, IsString, Length, Max, Min } from "class-validator";
-import { IsAdult, USER_GENDER, USER_PROVIDER, USER_ROLE } from "src/common";
+import { IsDate, IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
+import { IsAdult, USER_GENDER, USER_ROLE } from "src/common";
+import { LoginDto } from "./login-auth.dto";
 
-export class RegisterAuthDto {
+export class RegisterAuthDto extends LoginDto {
     @Length(3, 20, { message: "First name must be at least 3 characters and maximum 20 characters" })
     @IsString({ message: "First name must be a string" })
     @IsNotEmpty({ message: "First name is required" })
     firstName: string;
-    
+
     @Length(3, 20, { message: "Last name must be at least 3 characters and maximum 20 characters" })
     @IsString({ message: "Last name must be a string" })
     @IsNotEmpty({ message: "Last name is required" })
     lastName: string;
 
-    @IsEmail({}, { message: "Email must be a valid email address" })
-    @IsString({ message: "Email must be a string" })
-    @IsNotEmpty({ message: "Email is required" })
-    email: string;
 
-    @IsString({ message: "Password must be a string" })
-    @IsNotEmpty({ message: "Password is required" })
-    password: string;
+
 
     @IsEnum(USER_ROLE, { message: `Role must be a valid role[${USER_ROLE.USER} or ${USER_ROLE.ADMIN}]` })
     @IsString({ message: "Role must be a string" })

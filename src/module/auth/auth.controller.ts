@@ -1,8 +1,9 @@
 import { Body, Controller, Patch, Post } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { ConfirmEmailDto, RegisterAuthDto } from "./dto";
+import { ConfirmEmailDto, LoginDto, RegisterAuthDto, ResendOtpDto } from "./dto";
 import { User } from "./entities";
 import { AuthFactory } from "./factory";
+import { ResetPasswordDto } from "./dto/reset_password-auth.dto";
 
 @Controller('auth')
 export class AuthController {
@@ -30,6 +31,32 @@ export class AuthController {
             success: true,
         }
     }
+    @Patch('resend-otp')
+    public async resendOtp(@Body() resendOtpDto: ResendOtpDto) {
+        const message = await this.authService.resendOtp(resendOtpDto.email)
+        return {
+            message,
+            success: true,
+        }
+    }
+    @Patch('reset-password')
+    public async resetPassword(@Body() resetPassword: ResetPasswordDto) {
+        const message = await this.authService.resetPassword(resetPassword)
+        return {
+            message,
+            success: true,
+        }
+
+    }
+    @Post('login')
+    public async login(@Body() loginDto: LoginDto) {
+        const message = await this.authService.login(loginDto);
+        return {
+            message,
+            success: true,
+        }
+    }
+
 
 
 }

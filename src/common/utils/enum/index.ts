@@ -14,3 +14,7 @@ export enum SEND_TYPE {
     CONFIRMEMAIL = "confirmEmail",
     RESETPASSWORD = "resetPassword",
 }
+export enum typeOtp {
+    confirmEmail = 'confirmEmail',
+    forgetPassword = 'forgetPassword'
+}
