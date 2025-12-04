@@ -167,7 +167,7 @@ export class AuthService {
         }
         const dbToken = await this.tokenRepo.getOne({ token: token });
         if (!dbToken || dbToken.isRevoked) throw new UnauthorizedException('Refresh token revoked');
-        const accessToken = this.tokenService.generateAccessToken({ _id: payload._id });
+        const accessToken = this.tokenService.generateAccessToken({ _id: payload._id,email:payload.email });
         return { accessToken };
     }
     //login and signup
@@ -199,9 +199,9 @@ export class AuthService {
                     provider: USER_PROVIDER.GOOGLE,
                     isConfirmed: true,
                 });
-                return this.AccessAndRefreshToken({ id: user._id, payload: { _id: user._id } });
+                return await this.AccessAndRefreshToken({ id: user.id, payload: { email: user.email } });
             }
-            return this.AccessAndRefreshToken({ id: user._id, payload: { _id: user._id } });
+            return await this.AccessAndRefreshToken({ id: user.id, payload: { email: user.email } });
         } catch (error) {
             throw new UnauthorizedException(`Invalid or expired Google token ${error.message}`);
         }

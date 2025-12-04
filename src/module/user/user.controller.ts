@@ -1,23 +1,49 @@
-import { Controller, Get, Patch, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, UseGuards } from "@nestjs/common";
+import { User } from "src/common/decorator";
+import { AuthGuard } from "src/common/guard";
+import { ParamsIdDto, UpdatePasswordDto, UpdateProfileDto } from "./DTO";
+import { UserService } from "./user.service";
 
 
 @Controller("user")
+@UseGuards(AuthGuard)
 export class UserController {
-    constructor() { }
+    constructor(
+        private readonly userService: UserService
+    ) { }
 
 
     @Patch("update-profile")
-    updateProfile() { }
+    async updateProfile(@Body() updateProfileDto: UpdateProfileDto, @User() user: any) {
+        const data = await this.userService.updateProfile(updateProfileDto, user)
+        return {
+            message: "Updated Successfully",
+            success: true,
+            data
+        }
+    }
 
     @Get()
-    GetProfileUser() { }
+    async GetProfileUser(@User() user: any) {
+        const data = await this.userService.getProfileUser(user._id)
+        return { message: "done", success: true, data }
+    }
 
     @Get(":id")
-    GetProfileUserById() { }
+    async GetProfileUserById(@Param() params: ParamsIdDto) {
+        const data = await this.userService.getProfileUser(params.id)
+        return { message: "done", success: true, data }
+    }
 
 
     @Patch('update-password')
-    updatePassword() { }
+    async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto, @User() user: any) {
+        await this.userService.updatePassword(updatePasswordDto, user);
+        return {
+            message: "updated password Successfully",
+            success: true
+        }
+    }
 
 
     @Patch('update-profile-pic')
@@ -35,6 +61,12 @@ export class UserController {
     deleteCoverPic() { }
 
 
-    @Put()
-    deleteProfile() { }
+    @Delete()
+    async deleteProfile(@User() user: any) {
+        await this.userService.deleteAccount(user);
+        return {
+            message: "deleted Successfully",
+            success: true
+        }
+    }
 }

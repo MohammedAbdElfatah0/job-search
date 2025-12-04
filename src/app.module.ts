@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import configLoad from './config/env/env.dev';
 import { AuthModule } from './module';
 import { CommenModule } from './shared/module/commen.module';
+import { UserModule } from './module/user/user.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CommenModule } from './shared/module/commen.module';
     }),
     AuthModule,
     CommenModule,
+    UserModule,
   ],
   controllers: [],
   providers: [],
