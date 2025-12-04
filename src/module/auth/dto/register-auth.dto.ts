@@ -38,24 +38,6 @@ export class RegisterAuthDto extends LoginDto {
     @IsString({ message: "Mobile number must be a string" })
     @IsNotEmpty({ message: "Mobile number is required" })
     mobileNumber: string;
-    // @IsObject({ each: true, message: "Profile picture is Object { secure_url: string; public_id: string; }" })
-    // @IsNotEmpty(
-    //     {
-    //         message: "Profile picture is required"
-    //     }
-    // )
-    // profilePic: {
-    //     secure_url: string;
-    //     public_id: string;
-    // }
-    // @IsObject({ each: true, message: "Cover picture is Object { secure_url: string; public_id: string; }" })
-    // @IsNotEmpty(
-    //     {
-    //         message: "Cover picture is required"
-    //     }
-    // )
-    // coverPic: {
-    //     secure_url: string;
-    //     public_id: string;
-    // }
+
+
 }

@@ -4,7 +4,7 @@ import { Types } from "mongoose";
 
 
 @Schema({ timestamps: true })
- export class Token {
+export class Token {
 
     //userId
     @Prop({ type: Types.ObjectId, ref: "User", required: true })
@@ -18,6 +18,7 @@ import { Types } from "mongoose";
     //expirydate
     @Prop({ type: Date, required: true })
     expiryDate: Date;
+    createdAt: Date;
 
 }
 export const tokenSchema = SchemaFactory.createForClass(Token);
