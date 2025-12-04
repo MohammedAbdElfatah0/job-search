@@ -22,3 +22,23 @@ export enum typeToken {
     access = 'access',
     refresh = "refresh"
 }
+
+//jobOpportunity
+export  enum JOBLOCATION{
+    ONSITE = "onsite",
+    REMOTELY = "remotely",
+    HYBRID = "hybrid",
+}
+export enum WORKINGTIME{
+    PARTTIME = "part-time",
+    FULLTIME = "full-time",
+}
+export enum SENIORITYLEVEL{
+    FRESH = "fresh",
+    JUNIOR = "junior",
+    MIDLEVEL = "mid-level",
+    SENIOR = "senior",
+    TEAMLEAD = "team-lead",
+    CTO = "cto",
+}
+//
