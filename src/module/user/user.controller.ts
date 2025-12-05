@@ -62,15 +62,37 @@ export class UserController {
     }
 
     @Patch('update-cover-pic')
-    updateCoverPic() { }
+    @UseInterceptors(
+        FileInterceptor('cover_pic', createMulterOptions(10 * 1024 * 1024, ['image/jpg', 'image/png', 'image/jpeg']))
+    )
+    async updateCoverPic(@UploadedFile() cover_pic: Express.Multer.File, @User() user: any) {
+        const data = await this.userService.uploadImageCover(cover_pic, user);
+        return {
+            message: "Updated Successfully",
+            success: true,
+            data
+        }
+    }
 
 
 
-    @Patch('delete-profile-pic')
-    deleteProfilePic() { }
+    @Delete('delete-profile-pic')
+    async deleteProfilePic(@User() user: any) {
+        const message = await this.userService.deleteImageProfile(user);
+        return {
+            message,
+            success: true
+        }
+    }
 
-    @Patch('delete-cover-pic')
-    deleteCoverPic() { }
+    @Delete('delete-cover-pic')
+    async deleteCoverPic(@User() user: any) {
+        const message = await this.userService.deleteImageCover(user);
+        return {
+            message,
+            success: true
+        }
+    }
 
 
     @Delete()

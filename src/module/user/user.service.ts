@@ -1,11 +1,13 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+    UnauthorizedException
+} from "@nestjs/common";
 import { Types } from "mongoose";
 import { CloudinaryService, compereHash, generatedHash } from "src/common";
 import { User, UserRepository } from "src/DB";
 import { UpdatePasswordDto, UpdateProfileDto } from "./DTO";
-
-
-
 
 @Injectable()
 export class UserService {
@@ -14,30 +16,41 @@ export class UserService {
         private readonly cloudinaryService: CloudinaryService
     ) { }
 
+    private async checkUserExist(user: User) {
+        const userExist = await this.userRepository.getOne({
+            _id: user._id,
+            deletedAt: { $exists: false }
+        });
 
-    //update profile 
-    private extractUpdatedFields(dto: UpdateProfileDto): Partial<User> {
+        if (!userExist) {
+            throw new NotFoundException("User not found");
+        }
+
+        return userExist;
+    }
+
+    private mapUserResponse(user: User) {
+        return {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            mobileNumber: user.mobileNumber,
+            dob: user.dob,
+            gender: user.gender,
+        };
+    }
+
+    private extractUpdatedFields(dto: UpdateProfileDto) {
         const updateData: Partial<User> = {};
-
         for (const key in dto) {
             if (dto[key] !== undefined && dto[key] !== null) {
                 updateData[key] = dto[key];
             }
         }
-
         return updateData;
     }
-    private async checkUserExist(user: User) {
-        const userExist = await this.userRepository.getOne({ _id: user._id, deletedAt: { $exists: false } });
-        if (!userExist) {
-            throw new BadRequestException("User not found");
-        }
-        return userExist;
-    }
+
     public async updateProfile(updateProfileDto: UpdateProfileDto, user: User) {
         await this.checkUserExist(user);
-
-
 
         const updateData = this.extractUpdatedFields(updateProfileDto);
 
@@ -51,81 +64,126 @@ export class UserService {
         );
 
         if (!updatedUser) {
-            throw new Error("Failed to update user profile");
+            throw new BadRequestException("Failed to update user profile");
         }
 
-        const response = {
-            firstName: updatedUser.firstName,
-            lastName: updatedUser.lastName,
-            mobileNumber: updatedUser.mobileNumber,
-            dob: updatedUser.dob,
-            gender: updatedUser.gender
-        };
-        return response;
-
+        return this.mapUserResponse(updatedUser);
     }
 
-    //work also with public anther 
     public async getProfileUser(id: string | Types.ObjectId) {
-        const userExist = await this.userRepository.getOne({ _id: id, deletedAt: { $exists: false } });
+        const userExist = await this.userRepository.getOne({
+            _id: id,
+            deletedAt: { $exists: false }
+        });
+
         if (!userExist) {
-            throw new BadRequestException("User not found");
+            throw new NotFoundException("User not found");
         }
-        const response = {
-            firstName: userExist.firstName,
-            lastName: userExist.lastName,
-            mobileNumber: userExist.mobileNumber,
-            dob: userExist.dob,
-            gender: userExist.gender
-        };
-        return response;
+
+        return this.mapUserResponse(userExist);
     }
+
     public async updatePassword(passwordDto: UpdatePasswordDto, user: User) {
-        await this.checkUserExist(user);
-        //compere old password with user password
-        if (!compereHash(passwordDto.oldPassword, user.password)) {
-            throw new BadRequestException("Invalid credentials");
+        const userExist = await this.checkUserExist(user);
+
+        if (!compereHash(passwordDto.oldPassword, userExist.password)) {
+            throw new UnauthorizedException("Old password is incorrect");
         }
+
         const password = await generatedHash(passwordDto.newPassword);
-        const updatedUser = await this.userRepository.updateOne({ _id: user._id }, { $set: { password, changeCredentialTime: Date.now() } });
-        if (!updatedUser) {
-            throw new Error("Failed to update user password");
-        }
-        return;
+
+        await this.userRepository.updateOne(
+            { _id: userExist._id },
+            { $set: { password, changeCredentialTime: Date.now() } }
+        );
+
+        return { message: "Password updated successfully" };
     }
+
     public async deleteAccount(user: User) {
         await this.checkUserExist(user);
-        const deletedUser = await this.userRepository.softDeleteOne(user._id, { $set: { deletedAt: Date.now() } });
-        if (!deletedUser) {
-            throw new Error("Failed to delete user account");
-        }
-        return;
+
+        await this.userRepository.softDeleteOne(user._id, {
+            $set: { deletedAt: Date.now() }
+        });
+
+        return { message: "User deleted successfully" };
     }
 
-    //**
-    // ToDo upload and delete pic porfile or cover */
-    public async uploadImageProfile(file: Express.Multer.File, user: User) {
+    // =====================
+    //   IMAGE UPLOAD/DELETE
+    // =====================
+
+    private async uploadUserImage(
+        type: "profilePic" | "coverPic",
+        file: Express.Multer.File,
+        user: User
+    ) {
         const userExist = await this.checkUserExist(user);
-        if (userExist.profilePic) {
 
-            const uploaded = await this.cloudinaryService.uploadFile(file, `JobSearch/${userExist._id}/profile`, userExist.profilePic.public_id);
-            //update in db
-            await this.userRepository.updateOne({ _id: userExist._id }, { $set: { profilePic: { public_id: uploaded.display_name, secure_url: uploaded.secure_url } } })
-            return {
-                url: uploaded.secure_url,
-                name: uploaded.original_filename,
-                   id: uploaded.display_name   
+        const folder = type === "profilePic" ? "profile" : "cover";
+        const currentImage = userExist[type];
+
+        const uploaded = await this.cloudinaryService.uploadFile(
+            file,
+            `JobSearch/${userExist._id}/${folder}`,
+            currentImage?.public_id
+        );
+
+        await this.userRepository.updateOne(
+            { _id: userExist._id },
+            {
+                $set: {
+                    [type]: {
+                        public_id: uploaded.display_name,
+                        secure_url: uploaded.secure_url,
+                    },
+                },
             }
-        }
-        //uplaod image and give id , url
-        const uploaded = await this.cloudinaryService.uploadFile(file, `JobSearch/${userExist._id}/profile`);
-        await this.userRepository.updateOne({ _id: userExist._id }, { $set: { profilePic: { public_id: uploaded.display_name, secure_url: uploaded.secure_url } } })
+        );
 
-        //return url
         return {
             url: uploaded.secure_url,
             name: uploaded.original_filename,
-            id: uploaded.display_name        }
+            id: uploaded.display_name
+        };
     }
 
+    private async deleteUserImage(type: "profilePic" | "coverPic", user: User) {
+        const userExist = await this.checkUserExist(user);
+        const image = userExist[type];
+
+        if (!image) {
+            throw new NotFoundException(`No ${type} found`);
+        }
+
+        const folder = type === "profilePic" ? "profile" : "cover";
+
+        await this.cloudinaryService.deleteFile(
+            `JobSearch/${userExist._id}/${folder}/${image.public_id}`
+        );
+
+        await this.userRepository.updateOne(
+            { _id: userExist._id },
+            { $unset: { [type]: 1 } }
+        );
+
+        return `${type} deleted successfully`;
+    }
+    //-----------------------
+    public uploadImageProfile(file: Express.Multer.File, user: User) {
+        return this.uploadUserImage("profilePic", file, user);
+    }
+
+    public uploadImageCover(file: Express.Multer.File, user: User) {
+        return this.uploadUserImage("coverPic", file, user);
+    }
+
+    public deleteImageProfile(user: User) {
+        return this.deleteUserImage("profilePic", user);
+    }
+
+    public deleteImageCover(user: User) {
+        return this.deleteUserImage("coverPic", user);
+    }
 }
