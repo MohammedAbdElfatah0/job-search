@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { User } from "src/common/decorator";
 import { AuthGuard } from "src/common/guard";
 import { ParamsIdDto, UpdatePasswordDto, UpdateProfileDto } from "./DTO";
@@ -53,6 +53,9 @@ export class UserController {
         FileInterceptor('profile_pic', createMulterOptions(10 * 1024 * 1024, ['image/jpg', 'image/png', 'image/jpeg']))
     )
     async updateProfilePic(@UploadedFile() profile_pic: Express.Multer.File, @User() user: any) {
+        if (!profile_pic) {
+            throw new BadRequestException("No file uploaded");
+        }
         const data = await this.userService.uploadImageProfile(profile_pic, user);
         return {
             message: "Updated Successfully",
@@ -66,6 +69,9 @@ export class UserController {
         FileInterceptor('cover_pic', createMulterOptions(10 * 1024 * 1024, ['image/jpg', 'image/png', 'image/jpeg']))
     )
     async updateCoverPic(@UploadedFile() cover_pic: Express.Multer.File, @User() user: any) {
+        if (!cover_pic) {
+            throw new BadRequestException("No file uploaded");
+        }
         const data = await this.userService.uploadImageCover(cover_pic, user);
         return {
             message: "Updated Successfully",
