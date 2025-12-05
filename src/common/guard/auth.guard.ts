@@ -2,10 +2,11 @@
 
 import { BadRequestException, CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { TokenRepository, UserRepository } from 'src/DB/model/index';
-import { TokenService } from 'src/module/token';
+import { TokenRepository} from "src/DB/model/token/token.repository"
+import { TokenService } from 'src/module/token/token.service';
 import { PUBLIC } from '../decorator';
 import { typeToken } from '../utils';
+import { UserRepository } from 'src/DB/model/user/user.repository';
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(

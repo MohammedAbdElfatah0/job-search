@@ -21,6 +21,6 @@ export class Token {
     createdAt: Date;
 
 }
+export type TokenDocument = Token & Document;
 export const tokenSchema = SchemaFactory.createForClass(Token);
 tokenSchema.index({ expiryDate: 1 }, { expireAfterSeconds: 0 });
-export const tokenModel = MongooseModule.forFeature([{ name: Token.name, schema: tokenSchema }]);

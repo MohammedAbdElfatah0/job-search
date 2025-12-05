@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
-import configLoad from './config/env/env.dev';
-import { AuthModule } from './module';
-import { CommenModule } from './shared/module/commen.module';
-import { UserModule } from './module/user/user.module';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { CloudinaryProvider } from './config';
+import configLoad from './config/env/env.dev';
+import { AuthModule, UserModule } from './module';
+import { CommenModule } from './shared';
 
 @Module({
   imports: [
@@ -18,6 +18,13 @@ import { APP_GUARD } from '@nestjs/core';
 
       },
     ),
+    //connect with mongoose
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get("db").url,
+      })
+    }),
     ThrottlerModule.forRoot({
       throttlers: [
         {
@@ -26,15 +33,9 @@ import { APP_GUARD } from '@nestjs/core';
         },
       ],
     }),
-    //connect with mongoose
-    MongooseModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get("db").url,
-      })
-    }),
-    AuthModule,
+
     CommenModule,
+    AuthModule,
     UserModule,
   ],
   controllers: [],
@@ -42,7 +43,10 @@ import { APP_GUARD } from '@nestjs/core';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard
-    }
+    },
+  
+    CloudinaryProvider,
   ],
+  exports: [CloudinaryProvider]
 })
 export class AppModule { }

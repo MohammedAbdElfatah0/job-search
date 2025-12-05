@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { Types } from "mongoose";
-import { compereHash, generatedHash } from "src/common";
+import { CloudinaryService, compereHash, generatedHash } from "src/common";
 import { User, UserRepository } from "src/DB";
 import { UpdatePasswordDto, UpdateProfileDto } from "./DTO";
 
@@ -10,7 +10,8 @@ import { UpdatePasswordDto, UpdateProfileDto } from "./DTO";
 @Injectable()
 export class UserService {
     constructor(
-        private readonly userRepository: UserRepository
+        private readonly userRepository: UserRepository,
+        private readonly cloudinaryService: CloudinaryService
     ) { }
 
 
@@ -31,6 +32,7 @@ export class UserService {
         if (!userExist) {
             throw new BadRequestException("User not found");
         }
+        return userExist;
     }
     public async updateProfile(updateProfileDto: UpdateProfileDto, user: User) {
         await this.checkUserExist(user);
@@ -102,5 +104,28 @@ export class UserService {
 
     //**
     // ToDo upload and delete pic porfile or cover */
+    public async uploadImageProfile(file: Express.Multer.File, user: User) {
+        const userExist = await this.checkUserExist(user);
+        if (userExist.profilePic) {
+
+            const uploaded = await this.cloudinaryService.uploadFile(file, `JobSearch/${userExist._id}/profile`, userExist.profilePic.public_id);
+            //update in db
+            await this.userRepository.updateOne({ _id: userExist._id }, { $set: { profilePic: { public_id: uploaded.display_name, secure_url: uploaded.secure_url } } })
+            return {
+                url: uploaded.secure_url,
+                name: uploaded.original_filename,
+                   id: uploaded.display_name   
+            }
+        }
+        //uplaod image and give id , url
+        const uploaded = await this.cloudinaryService.uploadFile(file, `JobSearch/${userExist._id}/profile`);
+        await this.userRepository.updateOne({ _id: userExist._id }, { $set: { profilePic: { public_id: uploaded.display_name, secure_url: uploaded.secure_url } } })
+
+        //return url
+        return {
+            url: uploaded.secure_url,
+            name: uploaded.original_filename,
+            id: uploaded.display_name        }
+    }
 
 }

@@ -5,7 +5,7 @@ import { AbstractRepository } from "../../repository";
 import { User, UserDocument } from "./user.schema";
 @Injectable()
 export class UserRepository extends AbstractRepository<UserDocument> {
-    constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) {
+    constructor(@InjectModel("User") private readonly userModel: Model<UserDocument>) {
         super(userModel);
     }
 }

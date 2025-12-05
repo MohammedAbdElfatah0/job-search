@@ -4,7 +4,7 @@ import { compereHash, generatedHash, generateExpiryTime, generateOtp, resetPassw
 import { TokenRepository, UserDocument, User as UserModel, UserRepository } from "src/DB";
 import { LoginDto, ResetPasswordDto } from "./dto";
 import { User as UserEntity } from "./entities";
-import { TokenService } from "../token";
+import { TokenService } from "../token/token.service";
 import { OAuth2Client } from "google-auth-library";
 import { ConfigService } from "@nestjs/config";
 

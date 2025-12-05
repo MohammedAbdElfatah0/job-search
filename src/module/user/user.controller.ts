@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Patch, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { User } from "src/common/decorator";
 import { AuthGuard } from "src/common/guard";
 import { ParamsIdDto, UpdatePasswordDto, UpdateProfileDto } from "./DTO";
 import { UserService } from "./user.service";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { createMulterOptions } from "src/common";
 
 
 @Controller("user")
@@ -47,7 +49,17 @@ export class UserController {
 
 
     @Patch('update-profile-pic')
-    updateProfilePic() { }
+    @UseInterceptors(
+        FileInterceptor('profile_pic', createMulterOptions(10 * 1024 * 1024, ['image/jpg', 'image/png', 'image/jpeg']))
+    )
+    async updateProfilePic(@UploadedFile() profile_pic: Express.Multer.File, @User() user: any) {
+        const data = await this.userService.uploadImageProfile(profile_pic, user);
+        return {
+            message: "Updated Successfully",
+            success: true,
+            data
+        }
+    }
 
     @Patch('update-cover-pic')
     updateCoverPic() { }

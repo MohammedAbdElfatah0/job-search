@@ -2,16 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Types } from 'mongoose';
-import { TokenRepository, User } from 'src/DB';
+// import { TokenRepository, User } from 'src/DB/model';
 import { typeToken } from '../../common/utils/enum';
+import { TokenRepository } from 'src/DB/model/token/token.repository';
+import { User } from 'src/DB';
 
 
 @Injectable()
 export class TokenService {
     constructor(
+        private readonly tokenRepo: TokenRepository,
         private readonly jwtService: JwtService,
         private readonly config: ConfigService,
-        private readonly tokenRepo: TokenRepository,
     ) { }
 
     generateAccessToken(payload: Partial<User>) {
