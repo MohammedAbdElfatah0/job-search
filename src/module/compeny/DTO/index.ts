@@ -1,0 +1,1 @@
+export * from "./create-compeny.dto";
