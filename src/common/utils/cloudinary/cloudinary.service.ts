@@ -4,7 +4,6 @@ import { Readable } from 'stream';
 
 @Injectable()
 export class CloudinaryService {
-  // رفع ملف (صورة أو PDF) على Cloudinary
   async uploadFile(
     file: Express.Multer.File,
     folder: string = 'uploads',
@@ -15,8 +14,7 @@ export class CloudinaryService {
         {
           folder,
           public_id,
-          resource_type: 'auto', // مهم جدًا: يسمح برفع PDF وصور وفيديو
-          // لو عاوز تحدد أنواع معينة: allowed_formats: ['jpg', 'png', 'jpeg', 'pdf', 'webp'],
+          resource_type: 'auto',
           overwrite: true,
           invalidate: true
         },
@@ -26,41 +24,80 @@ export class CloudinaryService {
         },
       );
 
-      // تحويل buffer بتاع multer إلى stream ورفعه
+
       Readable.from(file.buffer).pipe(uploadStream);
     });
   }
 
-  // حذف ملف من Cloudinary باستخدام public_id
-  async deleteFile(publicId: string): Promise<any> {
+  async deleteFile(publicId: string, type: 'image' | 'raw' = 'image'): Promise<any> {
     // publicId يكون زي: "uploads/avatar_123abc"
+    // لاستخدام deleteFile على صورة يجب تحديد resource_type ك'image', وعلى غيره ك 'raw'
     return await cloudinary.uploader.destroy(publicId, {
-      resource_type: 'image', // أو 'raw' للـ PDF
-      // لو مش عارف النوع، استخدم invalidate: true و type: 'upload'
+      resource_type: type,
+      invalidate: true, // يجب تحديده عند حذف صورة من Cloudinary
     });
   }
 
-  // حذف متعدد (لو عاوز تحذف أكتر من واحد مرة واحدة)
-  async deleteFiles(publicIds: string[]): Promise<any> {
-    return await cloudinary.api.delete_resources(publicIds, {
-      resource_type: 'image', // أو 'raw' للـ PDF
-    });
+
+  async deleteFilesMixed(
+    items: { publicId: string; isPdf?: boolean }[],
+  ): Promise<any> {
+    // نفصل الصور عن الـ PDF
+    const images = items
+      .filter((item) => !item.isPdf)
+      .map((item) => item.publicId);
+
+    const pdfs = items
+      .filter((item) => item.isPdf)
+      .map((item) => item.publicId);
+
+    const results = [];
+
+    // نحذف الصور لو فيه
+    if (images.length > 0) {
+      await cloudinary.api.delete_resources(images, {
+        resource_type: 'image',
+      });
+
+    }
+
+    // نحذف الـ PDF لو فيه
+    if (pdfs.length > 0) {
+      await cloudinary.api.delete_resources(pdfs, {
+        resource_type: 'raw',
+      });
+
+    }
+
+    return results;
   }
 
-  // جلب الـ URL المباشر للملف (صورة أو PDF)
+  async deleteEntireFolder(folderPath: string): Promise<any> {
+    const normalizedFolder = folderPath.endsWith('/') ? folderPath : `${folderPath}/`;
+    return await cloudinary.api.delete_resources_by_prefix(normalizedFolder, {
+      all: true,
+      resource_type: 'image',
+    })
+      .then(() => cloudinary.api.delete_resources_by_prefix(normalizedFolder, {
+        all: true,
+        resource_type: 'raw',
+      }))
+      .then(() => {
+        return cloudinary.api.delete_folder(normalizedFolder);
+      });
+  }
+
+
   getFileUrl(publicId: string, isPdf: boolean = false): string {
     if (isPdf) {
-      // للـ PDF: raw file
       return cloudinary.url(publicId, {
         resource_type: 'raw',
         secure: true,
       });
     }
-    // للصور: عادي image
+
     return cloudinary.url(publicId, {
       secure: true,
-      // لو عاوز تحولات على الصورة زي resize
-      // transformation: [{ width: 500, height: 500, crop: 'limit' }]
     });
   }
 }

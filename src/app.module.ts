@@ -7,6 +7,7 @@ import { CloudinaryProvider } from './config';
 import configLoad from './config/env/env.dev';
 import { AuthModule, UserModule } from './module';
 import { CommenModule } from './shared';
+import { CompanyModule } from './module/compeny/company.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { CommenModule } from './shared';
     CommenModule,
     AuthModule,
     UserModule,
+    CompanyModule
   ],
   controllers: [],
   providers: [

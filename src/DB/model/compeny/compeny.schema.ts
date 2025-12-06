@@ -8,7 +8,7 @@ import { Document, Types } from 'mongoose';
 })
 export class Compeny {
 
-    @Prop({ type: String, required: true, unique: true, trim: true })
+    @Prop({ type: String, required: true, unique: true, trim: true, toLowerCase: true })
     companyName: string;
 
 
@@ -40,6 +40,7 @@ export class Compeny {
         type: {
             secure_url: String,
             public_id: String,
+            _id: false
         },
         default: null,
     })
@@ -53,6 +54,7 @@ export class Compeny {
         type: {
             secure_url: String,
             public_id: String,
+            _id: false
         },
         default: null,
     })
@@ -66,11 +68,11 @@ export class Compeny {
     HRs: Types.ObjectId[];
 
 
-    @Prop({ type: Date, default: null })
+    @Prop({ type: Date })
     bannedAt: Date;
 
 
-    @Prop({ type: Date, default: null })
+    @Prop({ type: Date })
     deletedAt: Date;
 
 
@@ -78,6 +80,7 @@ export class Compeny {
         type: {
             secure_url: String,
             public_id: String,
+            _id: false
         },
         default: null,
     })
@@ -93,3 +96,8 @@ export class Compeny {
 
 export type CompenyDocument = Compeny & Document;
 export const CompenySchema = SchemaFactory.createForClass(Compeny);
+CompenySchema.virtual('jobs', {
+    ref: 'JobOpportunity',          // اسم الموديل
+    localField: '_id',              // الحقل الموجود في Company
+    foreignField: 'companyId',      // الحقل الموجود في Job
+});

@@ -4,7 +4,7 @@ import { Model } from "mongoose";
 import { AbstractRepository } from "../../repository";
 import { Compeny, CompenyDocument } from "./compeny.schema";
 @Injectable()
-export class UserRepository extends AbstractRepository<CompenyDocument> {
+export class CompanyRepository extends AbstractRepository<CompenyDocument> {
     constructor(@InjectModel(Compeny.name) private readonly compenyModel: Model<CompenyDocument>) {
         super(compenyModel);
     }
