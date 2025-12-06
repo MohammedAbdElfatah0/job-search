@@ -8,6 +8,7 @@ import configLoad from './config/env/env.dev';
 import { AuthModule, UserModule } from './module';
 import { CommenModule } from './shared';
 import { CompanyModule } from './module/compeny/company.module';
+import { JobModule } from './module/job/job.module';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { CompanyModule } from './module/compeny/company.module';
     CommenModule,
     AuthModule,
     UserModule,
-    CompanyModule
+    CompanyModule,
+    JobModule,
   ],
   controllers: [],
   providers: [
@@ -46,7 +48,7 @@ import { CompanyModule } from './module/compeny/company.module';
       provide: APP_GUARD,
       useClass: ThrottlerGuard
     },
-  
+
     CloudinaryProvider,
   ],
   exports: [CloudinaryProvider]
