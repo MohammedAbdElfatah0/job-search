@@ -60,6 +60,9 @@ export class JobOpportunity {
     // 11. companyId
     @Prop({ type: Types.ObjectId, ref: "Compeny", required: true })
     companyId: Types.ObjectId;
+    //deleteAt
+    @Prop({ type: Date, })
+    deletedAt: Date;
 }
 
 export type JobOpportunityDocument = JobOpportunity & Document;

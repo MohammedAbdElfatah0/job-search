@@ -1,7 +1,7 @@
 import { IsArray, IsEnum, IsNotEmpty, IsString } from "class-validator";
-import { JOBLOCATION, SENIORITYLEVEL, WORKINGTIME } from "src/common";
+import { JOBLOCATION, WORKINGTIME, SENIORITYLEVEL } from "src/common";
 
-export class CreateJobDto {
+export class UpdateJobDto {
     @IsString({ message: 'jobTitle must be string' })
     @IsNotEmpty({ message: 'jobTitle required' })
     jobTitle: string;
@@ -39,5 +39,4 @@ export class CreateJobDto {
     @IsString({ each: true, message: "each soft skill must be string" })
     @IsNotEmpty({ message: "softSkills required" })
     softSkills: string[];
-
 }
