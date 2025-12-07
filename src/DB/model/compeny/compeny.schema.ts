@@ -82,7 +82,6 @@ export class Compeny {
             public_id: String,
             _id: false
         },
-        default: null,
     })
     legalAttachment: {
         secure_url: string;
