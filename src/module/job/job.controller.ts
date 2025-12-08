@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { CreateJobDto } from "./DTO/create-job.dto";
 import { AuthGuard, Public, User } from "src/common";
 import { JobService } from "./job.service";
 import { UpdateJobDto } from "./DTO";
+import { ChangeStausDto } from "./DTO/change-status.dto";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller('job')
 @UseGuards(AuthGuard)
@@ -83,4 +85,40 @@ export class JobController {
             data,
         };
     }
+    @Get('applyJob/:id')
+    public async getApplier(@Param('id') id: string, @User() user: any) {
+        const data = await this.jobService.getApplier(id, user);
+        return {
+            message: "all job applier",
+            data
+        }
+    }
+    @Post('apply/:id')
+    @UseInterceptors(FileInterceptor('CV'))
+    async applyJob(
+        @Param('id') id: string,
+        @User() user,
+        @UploadedFile() CV: Express.Multer.File
+    ) {
+        const data = await this.jobService.applyJob(id, user, CV);
+        return {
+            message: 'Job applied successfully',
+            success: true,
+            data,
+        };
+    }
+    @Patch('application/status/:id')
+    async changeStatus(
+        @Param('id') id: string,
+        @Body() changeStatusDto: ChangeStausDto,
+        @User() user,
+    ) {
+        const data = await this.jobService.accpAndRejectJob(id, changeStatusDto, user);
+        return {
+            message: 'Application status updated',
+            success: true,
+            data,
+        };
+    }
+
 }

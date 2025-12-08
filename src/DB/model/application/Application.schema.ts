@@ -33,6 +33,11 @@ export class Application {
         default: ApplicationStatus.PENDING,
     })
     status: ApplicationStatus;
+    //--reason ?? to send mail for user 
+    @Prop({
+        type: String,
+    })
+    reason: string;
 }
 
 export type ApplicationDocument = Application & Document;

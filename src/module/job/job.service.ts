@@ -9,6 +9,11 @@ import { CreateJobDto, UpdateJobDto } from "./DTO";
 import { JobFactoryServide } from "./factory";
 import { ApplicationRepository } from "src/DB/model/application/Application.repository";
 import { JobGateway } from "./job.socket.io";
+import { ChangeStausDto } from "./DTO/change-status.dto";
+import { ApplicationStatus, CloudinaryService, sendEmailHelper } from "src/common";
+import { UserService } from "../user/user.service";
+import { jobAcceptedTemplate } from "src/common/utils/sendMailer/job_accepted_template";
+import { jobRejectedTemplate } from "src/common/utils/sendMailer/job_rejected_template";
 
 @Injectable()
 export class JobService {
@@ -18,6 +23,8 @@ export class JobService {
         private readonly companyRepository: CompanyRepository,
         private readonly applicationRepository: ApplicationRepository,
         private readonly socketGateway: JobGateway,
+        private readonly userService: UserService,
+        private readonly cloudinaryService: CloudinaryService,
     ) { }
 
     private isHRForCompany(user: User, company: Company): boolean {
@@ -122,34 +129,42 @@ export class JobService {
         )
         return data;
     }
-    //todo handel
-    //idJob
+
+
+    
     public async getApplier(id: string | Types.ObjectId, user: User) {
-        const jobExist = await this.jobRepository.getOne({ _id: id, closed: false, deletedAt: { $exists: false } }, {}, {
-            populate: [{ path: 'companyId' }]
-        });
+        const jobExist = await this.jobRepository.getOne(
+            { _id: id, closed: false, deletedAt: { $exists: false } },
+            {},
+            { populate: [{ path: 'companyId' }] }
+        );
         if (!jobExist) {
             throw new BadRequestException('job not found');
         }
+
         const company = await this.companyRepository.getOne({ _id: jobExist.companyId._id });
         if (!company) {
             throw new BadRequestException('company not found');
-
         }
+
         this.isHRForJob(jobExist, user);
 
-        //get all apply
-        //todo when apply test it
-        await this.jobRepository.getAll(
+        // ✅ get all applications for this job
+        const applications = await this.applicationRepository.getAll(
+            { jobId: jobExist._id },
             {},
-            {},
-            { populate: [{ path: 'Application' }] }
-        )
+            {
+                // optional: populate user info for each applier
+                populate: [{ path: 'userId', select: 'firstName lastName email mobileNumber' }],
+            },
+        );
+
+        return applications;
     }
 
 
     //apply job
-    public async applyJob(id: string | Types.ObjectId, user: User) {
+    public async applyJob(id: string | Types.ObjectId, user: User, CV: Express.Multer.File) {
         //check job exist and not closed
         const jobExisted = await this.jobRepository.getOne({ _id: id, deletedAt: { $exists: false } });
         if (!jobExisted) {
@@ -160,7 +175,18 @@ export class JobService {
         }
         const alreadyApplied = await this.applicationRepository.getOne({ jobId: jobExisted._id, userId: user._id });
         if (alreadyApplied) throw new BadRequestException("You already applied to this job");
-        const applyJob = await this.applicationRepository.create({ jobId: jobExisted._id, userId: user._id },);
+
+
+        const userCvs = await this.cloudinaryService.uploadFile(
+            CV,
+            `JobSearch/${user._id}/company/${jobExisted.jobTitle}/apply/`,
+        )
+        const applyJob = await this.applicationRepository.create({
+            jobId: jobExisted._id, userId: user._id, userCV: {
+                public_id: userCvs.display_name,
+                secure_url: userCvs.secure_url
+            }
+        },);
 
         // Emit socket event to HRs
         this.socketGateway.notifyHR(
@@ -172,4 +198,46 @@ export class JobService {
         return applyJob;
     }
 
+    public async accpAndRejectJob(id: string, changeStatusDto: ChangeStausDto, user: User) {
+        //id of application applier
+        const applicationApply = await this.applicationRepository.getOne({ _id: id });
+        if (!applicationApply) throw new NotFoundException('application not found');
+        //get exist?
+        const job = await this.jobRepository.getOne({ _id: applicationApply.jobId }, {}, { populate: [{ path: 'companyId' }] });
+        if (!job) {
+            throw new NotFoundException('job not found');
+        }
+        // check hr using existing helper
+        this.isHRForJob(job, user);
+
+        //found user
+
+        const userApply = await this.userService.getProfileUser(applicationApply.userId);
+        //chage state
+        switch (changeStatusDto.status) {
+            case ApplicationStatus.ACCEPTED:
+                //send mail to him\her   
+                await sendEmailHelper({
+                    to: userApply.email,
+                    subject: 'Application Accepted',
+                    html: jobAcceptedTemplate(userApply.firstName + ' ' + userApply.lastName, job.jobTitle, changeStatusDto.reason),
+                });
+                break;
+            case ApplicationStatus.REJECTED:
+                //send mail to him\her
+                await sendEmailHelper({
+                    to: userApply.email,
+                    subject: 'Application Rejected',
+                    html: jobRejectedTemplate(userApply.firstName + ' ' + userApply.lastName, job.jobTitle, changeStatusDto.reason),
+                });
+                break;
+            default:
+                throw new BadRequestException('Invalid status');
+        }
+        applicationApply.status = changeStatusDto.status;
+        applicationApply.reason = changeStatusDto.reason;
+        await applicationApply.save();
+        return applicationApply;
+
+    }
 }

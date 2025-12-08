@@ -31,6 +31,7 @@ export class UserService {
 
     private mapUserResponse(user: User) {
         return {
+            email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
             mobileNumber: user.mobileNumber,

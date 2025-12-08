@@ -10,6 +10,8 @@ import { Compeny, CompenySchema } from "src/DB/model/compeny/compeny.schema";
 import { ApplicationRepository } from "src/DB/model/application/Application.repository";
 import { Application, ApplicationSchema } from "src/DB/model/application/Application.schema";
 import { JobGateway } from "./job.socket.io";
+import { UserService } from "../user/user.service";
+import { CloudinaryService } from "src/common";
 
 @Module({
     imports: [
@@ -22,6 +24,6 @@ import { JobGateway } from "./job.socket.io";
         ),
     ],
     controllers: [JobController],
-    providers: [JobService, JobFactoryServide, JobOpportunityRepository, CompanyRepository, ApplicationRepository, JobGateway],
+    providers: [JobService, JobFactoryServide, JobOpportunityRepository, CompanyRepository, ApplicationRepository, JobGateway, UserService, CloudinaryService],
 })
 export class JobModule { }
