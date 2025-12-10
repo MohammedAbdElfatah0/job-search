@@ -2,11 +2,12 @@
 
 import { BadRequestException, CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { TokenRepository} from "src/DB/model/token/token.repository"
+import { TokenRepository } from "src/DB/model/token/token.repository"
 import { TokenService } from 'src/module/token/token.service';
 import { PUBLIC } from '../decorator';
 import { typeToken } from '../utils';
 import { UserRepository } from 'src/DB/model/user/user.repository';
+import { GqlExecutionContext } from '@nestjs/graphql';
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
@@ -15,15 +16,37 @@ export class AuthGuard implements CanActivate {
         private readonly tokenService: TokenService,
         private readonly repoToken: TokenRepository,
     ) { }
-
+    private giveHeader(req: any) {
+        const { headers } = req;
+        const authorization = headers.authorization;
+        const refreshtoken = headers.refreshtoken;
+        return { authorization, refreshtoken };
+    }
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const request = context.switchToHttp().getRequest();
+
 
         // public
         const isPublic = this.reflector.get(PUBLIC, context.getHandler());
         if (isPublic) return true;
         // get token
-        const { authorization, refreshtoken }: { authorization: string, refreshtoken: string } = request.headers;
+        let req;
+        let authorization: string = "";
+        let refreshtoken: string = "";
+        switch (context.getType<string>()) {
+            case "http":
+                req = context.switchToHttp().getRequest();
+                ({ authorization, refreshtoken } = this.giveHeader(req));
+                break;
+            case "graphql":
+                req = GqlExecutionContext.create(context).getContext().req;
+                ({ authorization, refreshtoken } = this.giveHeader(req));
+                break;
+            case "ws":
+                req = context.switchToWs().getClient();
+                ({ authorization, refreshtoken } = this.giveHeader(req));
+                break;
+        }
+
         if (!authorization && !refreshtoken) {
             throw new BadRequestException("authorization is required");
         }
@@ -57,8 +80,8 @@ export class AuthGuard implements CanActivate {
         //compere date
         if (user.changeCredentialTime > refTokenDoc.createdAt) throw new UnauthorizedException("Invalid Refresh Token");
 
-
-        request.user = user;
+        console.log(user);
+        req.user = user;
         return true;
     }
 }

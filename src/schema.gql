@@ -7,6 +7,29 @@ type AttachmentGQL {
   public_id: String
 }
 
+type CompanyGQL {
+  _id: ID!
+  companyName: String!
+  description: String!
+  industry: String!
+  address: String!
+  numberOfEmployees: String!
+  companyEmail: String!
+  createdBy: String!
+  logo: AttachmentGQL
+  coverPic: AttachmentGQL
+  HRs: [String!]!
+  bannedAt: DateTime
+  deletedAt: DateTime
+  legalAttachment: AttachmentGQL
+  approvedByAdmin: Boolean!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type UserGQL {
   _id: ID!
   firstName: String!
@@ -24,29 +47,6 @@ type UserGQL {
 enum USER_GENDER {
   MALE
   FEMALE
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-type CompanyGQL {
-  _id: ID!
-  companyName: String!
-  description: String!
-  industry: String!
-  address: String!
-  numberOfEmployees: String!
-  companyEmail: String!
-  createdBy: String!
-  logo: AttachmentGQL
-  coverPic: AttachmentGQL
-  HRs: [String!]!
-  bannedAt: DateTime
-  deletedAt: DateTime
-  legalAttachment: AttachmentGQL
-  approvedByAdmin: Boolean!
 }
 
 type AdminGQL {

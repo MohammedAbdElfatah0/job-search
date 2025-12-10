@@ -1,15 +1,18 @@
-import { ForbiddenException, NotFoundException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException, UseGuards } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { UserRepository } from "src/DB";
 import { CompanyRepository } from "src/DB/model/compeny/compeny.repository";
-import { USER_ROLE } from "src/common";
+import { Auth, AuthGuard, Roles, RolesGuards, USER_ROLE } from "src/common";
+import { CompanyGQL } from "../compeny/company.resolve";
 import { CompanyService } from "../compeny/company.service";
 import { UserGQL } from "../user/user.resolve";
 import { UserService } from "../user/user.service";
 import { AdminGQL } from "./admin.graphql";
-import { CompanyGQL } from "../compeny/company.resolve";
 
 @Resolver()
+// @UseGuards(Auth([USER_ROLE.ADMIN]))
+@Roles([USER_ROLE.ADMIN])
+@UseGuards(AuthGuard, RolesGuards)
 export class AdminReslove {
     constructor(
         private readonly userService: UserService,
