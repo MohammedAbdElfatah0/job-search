@@ -1,7 +1,7 @@
 import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
-import { AttachmentGQL } from "../common/attachment.graphql";
-import { typeOtp, USER_GENDER } from "src/common";
 import { Types } from "mongoose";
+import { USER_GENDER } from "src/common";
+import { AttachmentGQL } from "../common/attachment.graphql";
 
 registerEnumType(USER_GENDER, {
     name: "USER_GENDER",
@@ -42,13 +42,5 @@ export class UserGQL {
     // لو عايز ترجع role
     @Field(type => String, { nullable: true })
     role?: string;
-
-
-
-
-
-
-
-
-
 }
+
