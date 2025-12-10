@@ -6,10 +6,10 @@ import { CloudinaryService } from "src/common";
 
 @Module(
     {
-        imports:[userMongooseModule],
-        providers: [UserService,UserRepository,CloudinaryService],
-        controllers: [UserController]
-
+        imports: [userMongooseModule],
+        providers: [UserService, UserRepository, CloudinaryService],
+        controllers: [UserController],
+        exports: [UserService, UserRepository, CloudinaryService]
     }
 )
 export class UserModule { }

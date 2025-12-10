@@ -5,7 +5,7 @@ import {
     UnauthorizedException
 } from "@nestjs/common";
 import { Types } from "mongoose";
-import { CloudinaryService, compereHash, generatedHash } from "src/common";
+import { CloudinaryService, compereHash, generatedHash, USER_ROLE } from "src/common";
 import { User, UserRepository } from "src/DB";
 import { UpdatePasswordDto, UpdateProfileDto } from "./DTO";
 
@@ -186,5 +186,11 @@ export class UserService {
 
     public deleteImageCover(user: User) {
         return this.deleteUserImage("coverPic", user);
+    }
+
+
+    ///for admin 
+    public async getAllUser() {
+        return await this.userRepository.getAll({ role: USER_ROLE.USER, deletedAt: { $exists: false } });
     }
 }

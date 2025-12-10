@@ -1,15 +1,19 @@
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { GraphQLModule } from '@nestjs/graphql';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { join } from 'path';
+import { GqlThrottlerGuard } from './common/guard/graphql.throttler.guard';
 import { CloudinaryProvider } from './config';
 import configLoad from './config/env/env.dev';
 import { AuthModule, UserModule } from './module';
-import { CommenModule } from './shared';
+import { AdminModule } from './module/admin/admin.module';
 import { CompanyModule } from './module/compeny/company.module';
 import { JobModule } from './module/job/job.module';
-
+import { CommenModule } from './shared';
 @Module({
   imports: [
     //connect with .env
@@ -35,18 +39,23 @@ import { JobModule } from './module/job/job.module';
         },
       ],
     }),
-
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      context: ({ req, res }) => ({ req, res }),
+    }),
     CommenModule,
     AuthModule,
     UserModule,
     CompanyModule,
     JobModule,
+    AdminModule
   ],
   controllers: [],
   providers: [
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
+      useClass: GqlThrottlerGuard
     },
 
     CloudinaryProvider,

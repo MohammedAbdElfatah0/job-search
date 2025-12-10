@@ -23,6 +23,11 @@ import { CloudinaryService } from "src/common";
             CompanyRepository,
             CloudinaryService,
         ],
+        exports: [
+            CompanyService,
+            CompanyFactoryService,
+            CompanyRepository,
+            CloudinaryService,]
     }
 )
 export class CompanyModule { }

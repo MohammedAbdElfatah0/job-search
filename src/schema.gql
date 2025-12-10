@@ -1,0 +1,64 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AttachmentGQL {
+  secure_url: String
+  public_id: String
+}
+
+type UserGQL {
+  _id: ID!
+  firstName: String!
+  lastName: String!
+  userName: String!
+  email: String!
+  gender: USER_GENDER!
+  dob: String
+  profilePic: AttachmentGQL
+  coverPic: AttachmentGQL
+  bannedAt: DateTime
+  role: String
+}
+
+enum USER_GENDER {
+  MALE
+  FEMALE
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type CompanyGQL {
+  _id: ID!
+  companyName: String!
+  description: String!
+  industry: String!
+  address: String!
+  numberOfEmployees: String!
+  companyEmail: String!
+  createdBy: String!
+  logo: AttachmentGQL
+  coverPic: AttachmentGQL
+  HRs: [String!]!
+  bannedAt: DateTime
+  deletedAt: DateTime
+  legalAttachment: AttachmentGQL
+  approvedByAdmin: Boolean!
+}
+
+type AdminGQL {
+  user: [UserGQL!]
+  company: [CompanyGQL!]
+}
+
+type Query {
+  displayAllData: AdminGQL!
+  sayHello: String!
+}
+
+type Mutation {
+  toBanOrUnBan(userId: String!): UserGQL!
+}

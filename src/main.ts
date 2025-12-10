@@ -12,7 +12,7 @@ async function bootstrap() {
     whitelist: true,
     transform: true,
   }))
-  app.useGlobalInterceptors(new TransformInterceptor());
+  // app.useGlobalInterceptors(new TransformInterceptor());
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
