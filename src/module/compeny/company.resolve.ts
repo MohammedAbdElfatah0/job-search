@@ -1,58 +1,51 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { AttachmentGQL } from '../common/attachment.graphql';
 
-@ObjectType()
-export class AttachmentGQL {
-    @Field(() => String, { nullable: true })
-    secure_url: string;
-
-    @Field(() => String, { nullable: true })
-    public_id: string;
-}
 
 @ObjectType()
 export class CompanyGQL {
-    @Field(() => ID)
+    @Field(type => ID)
     _id: string;
 
-    @Field(() => String)
+    @Field(type => String)
     companyName: string;
 
-    @Field(() => String)
+    @Field(type => String)
     description: string;
 
-    @Field(() => String)
+    @Field(type => String)
     industry: string;
 
-    @Field(() => String)
+    @Field(type => String)
     address: string;
 
-    @Field(() => String)
+    @Field(type => String)
     numberOfEmployees: string;
 
-    @Field(() => String)
+    @Field(type => String)
     companyEmail: string;
 
-    @Field(() => String)
+    @Field(type => String)
     createdBy: string; // ObjectId → String في GraphQL
 
-    @Field(() => AttachmentGQL, { nullable: true })
+    @Field(type => AttachmentGQL, { nullable: true })
     logo?: AttachmentGQL;
 
-    @Field(() => AttachmentGQL, { nullable: true })
+    @Field(type => AttachmentGQL, { nullable: true })
     coverPic?: AttachmentGQL;
 
-    @Field(() => [String])
+    @Field(type => [String])
     HRs: string[];
 
-    @Field(() => Date, { nullable: true })
+    @Field(type => Date, { nullable: true })
     bannedAt?: Date;
 
-    @Field(() => Date, { nullable: true })
+    @Field(type => Date, { nullable: true })
     deletedAt?: Date;
 
-    @Field(() => AttachmentGQL, { nullable: true })
+    @Field(type => AttachmentGQL, { nullable: true })
     legalAttachment?: AttachmentGQL;
 
-    @Field(() => Boolean)
+    @Field(type => Boolean)
     approvedByAdmin: boolean;
 }
