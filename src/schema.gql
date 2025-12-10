@@ -60,5 +60,7 @@ type Query {
 }
 
 type Mutation {
-  toBanOrUnBan(userId: String!): UserGQL!
+  BanOrUnBanUser(userId: String!): UserGQL!
+  BanOrUnBanCopmany(userId: String!): CompanyGQL!
+  ApproveCompany(userId: String!): CompanyGQL!
 }
