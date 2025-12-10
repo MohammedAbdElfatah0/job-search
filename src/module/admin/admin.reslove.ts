@@ -26,11 +26,6 @@ export class AdminReslove {
         const user = await this.userService.getAllUser();
         return { user, company };
     }
-    @Query(() => String)
-    sayHello() {
-        return 'hello GQL'
-    }
-
     //admin make user ban and 
     private async banOrUnbanUser(id: string) {
         //check user exist

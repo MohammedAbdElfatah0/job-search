@@ -149,7 +149,6 @@ export class AuthService {
         if (!math) {
             throw new BadRequestException('Invalid credentials');
         }
-        //todo genereta token
         return await this.AccessAndRefreshToken({
             id: userExist.id,
             payload: {

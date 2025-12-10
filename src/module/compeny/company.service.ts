@@ -16,8 +16,6 @@ export class CompanyService {
         private readonly cloudinaryService: CloudinaryService,
     ) { }
 
-
-    //todo sove bug when error ->them done upload file
     public async createCompany(createCompanyDto: CreateCompanyDto, user: User, file: Express.Multer.File): Promise<any> {
         //get company factory - user?
         const companyExist = await this.companyRepository.getOne({

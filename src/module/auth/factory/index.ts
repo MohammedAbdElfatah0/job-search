@@ -10,18 +10,13 @@ export class AuthFactory {
         user.lastName = registerDto.lastName;
         user.mobileNumber = registerDto.mobileNumber;
         user.email = registerDto.email;
-        user.password = await generatedHash(registerDto.password);//TODO hash password
+        user.password = await generatedHash(registerDto.password);
         user.gneder = registerDto.gender;
         user.role = registerDto.role;
         user.dob = registerDto.dob;
-        // user.profilePic = registerDto.profilePic;
-        // user.coverPic = registerDto.coverPic;
         user.isConfirmed = false;
         user.updatedAt = new Date();
         user.provider = USER_PROVIDER.SYSTEM;
-        /**
-         * otp in hooks for give info and send email 
-         */
         return user;
     }
 }

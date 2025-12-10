@@ -19,7 +19,6 @@ export class AuthController {
         const newUser = await this.authService.register(user)
         return {
             message: "created Account successfully ",
-            success: true,
             data: newUser
         }
     }
@@ -28,7 +27,6 @@ export class AuthController {
         const message = await this.authService.confirmEmail(confirmEmailDto.email, confirmEmailDto.otp)
         return {
             message,
-            success: true,
         }
     }
     @Patch('resend-otp')
@@ -36,7 +34,6 @@ export class AuthController {
         const message = await this.authService.resendOtp(resendOtpDto.email)
         return {
             message,
-            success: true,
         }
     }
     @Patch('reset-password')
@@ -44,7 +41,6 @@ export class AuthController {
         const message = await this.authService.resetPassword(resetPassword)
         return {
             message,
-            success: true,
         }
 
     }
@@ -53,7 +49,6 @@ export class AuthController {
         const data = await this.authService.login(loginDto);
         return {
             message: "Login Successfully",
-            success: true,
             data
         }
     }

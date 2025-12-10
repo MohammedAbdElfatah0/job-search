@@ -53,6 +53,7 @@ export class JobOpportunity {
     @Prop({ type: Types.ObjectId, ref: "User", default: null })
     updatedBy: Types.ObjectId;
 
+    //todo api
     // 10. closed
     @Prop({ type: Boolean, default: false })
     closed: boolean;
