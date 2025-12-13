@@ -45,6 +45,7 @@ import { AppController } from './app.controller';
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
+      // autoSchemaFile: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       context: ({ req, res }) => ({ req, res }),
       playground: false,
