@@ -14,6 +14,7 @@ import { AdminModule } from './module/admin/admin.module';
 import { CompanyModule } from './module/compeny/company.module';
 import { JobModule } from './module/job/job.module';
 import { CommenModule } from './shared';
+import { AppController } from './app.controller';
 @Module({
   imports: [
     //connect with .env
@@ -53,7 +54,9 @@ import { CommenModule } from './shared';
     JobModule,
     AdminModule
   ],
-  controllers: [],
+  controllers: [
+    AppController
+  ],
   providers: [
     {
       provide: APP_GUARD,
