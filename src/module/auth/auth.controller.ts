@@ -1,9 +1,8 @@
 import { BadRequestException, Body, Controller, Headers, Patch, Post, Put, UsePipes, ValidationPipe } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { ConfirmEmailDto, LoginDto, RegisterAuthDto, ResendOtpDto } from "./dto";
+import { ConfirmEmailDto, LoginDto, RegisterAuthDto, ResendOtpDto, ResetPasswordDto } from "./dto";
 import { User } from "./entities";
 import { AuthFactory } from "./factory";
-import { ResetPasswordDto } from "./dto/reset_password-auth.dto";
 
 @Controller('auth')
 export class AuthController {

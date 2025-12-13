@@ -1,10 +1,8 @@
 import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
-import { User } from "src/common/decorator";
-import { AuthGuard } from "src/common/guard";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { AuthGuard, createMulterOptions, User } from "../../common";
 import { ParamsIdDto, UpdatePasswordDto, UpdateProfileDto } from "./DTO";
 import { UserService } from "./user.service";
-import { FileInterceptor } from "@nestjs/platform-express";
-import { createMulterOptions } from "src/common";
 
 
 @Controller("user")

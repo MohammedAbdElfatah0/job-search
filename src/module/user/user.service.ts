@@ -5,8 +5,8 @@ import {
     UnauthorizedException
 } from "@nestjs/common";
 import { Types } from "mongoose";
-import { CloudinaryService, compereHash, generatedHash, USER_ROLE } from "src/common";
-import { User, UserRepository } from "src/DB";
+import { CloudinaryService, compereHash, generatedHash, USER_ROLE } from "../../common";
+import { User, UserRepository } from "../../DB";
 import { UpdatePasswordDto, UpdateProfileDto } from "./DTO";
 
 @Injectable()

@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { CreateJobDto } from "../DTO/create-job.dto";
-import { Job } from "../entity";
 import { Types } from "mongoose";
-import { User } from "src/DB";
-import { UpdateJobDto } from "../DTO";
+import { User } from "../../../DB";
+import { CreateJobDto, UpdateJobDto } from "../DTO";
+import { Job } from "../entity";
 
 @Injectable()
 export class JobFactoryServide {

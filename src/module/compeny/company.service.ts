@@ -1,12 +1,10 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
-import { CompanyRepository } from "src/DB/model/compeny/compeny.repository";
-import { Company } from "./entities";
-import { UpdateCompanyDto } from "./DTO/update-company.dto";
-import { User } from "src/DB";
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { Types } from "mongoose";
+import { CompanyRepository } from "src/DB/model/compeny/compeny.repository";
+import { CloudinaryService } from "../../common";
+import { User } from "../../DB";
+import { CreateCompanyDto, UpdateCompanyDto } from "./DTO";
 import { CompanyFactoryService } from "./factory";
-import { CloudinaryService } from "src/common";
-import { CreateCompanyDto } from "./DTO";
 
 @Injectable()
 export class CompanyService {

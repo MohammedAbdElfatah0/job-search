@@ -1,6 +1,6 @@
 import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
 import { Types } from "mongoose";
-import { USER_GENDER } from "src/common";
+import { USER_GENDER } from "../../common";
 import { AttachmentGQL } from "../common/attachment.graphql";
 
 registerEnumType(USER_GENDER, {

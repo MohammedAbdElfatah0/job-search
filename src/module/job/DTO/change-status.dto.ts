@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsString } from "class-validator";
-import { ApplicationStatus } from "src/common";
+import { ApplicationStatus } from "../../../common";
 
 export class ChangeStausDto {
     @IsEnum(ApplicationStatus, { message: `status must be ${ApplicationStatus.ACCEPTED},${ApplicationStatus.REJECTED}` })

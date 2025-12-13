@@ -1,7 +1,6 @@
 import { MongooseModule, Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { generateExpiryTime, generateOtp, USER_GENDER, USER_PROVIDER, USER_ROLE } from 'src/common';
-import { confirmEmailTemplate, CryptoHelper, generatedHash, sendEmailHelper, typeOtp } from 'src/common/utils';
+import { confirmEmailTemplate, CryptoHelper, generatedHash, generateExpiryTime, generateOtp, sendEmailHelper, typeOtp, USER_GENDER, USER_PROVIDER, USER_ROLE } from '../../../common';
 
 @Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class User {

@@ -1,8 +1,8 @@
 import { ForbiddenException, NotFoundException, UseGuards } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { UserRepository } from "src/DB";
-import { CompanyRepository } from "src/DB/model/compeny/compeny.repository";
-import { Auth, AuthGuard, Roles, RolesGuards, USER_ROLE } from "src/common";
+import { AuthGuard, Roles, RolesGuards, USER_ROLE } from "src/common";
+import { UserRepository } from "../../DB";
+import { CompanyRepository } from "../../DB/model/compeny/compeny.repository";
 import { CompanyGQL } from "../compeny/company.resolve";
 import { CompanyService } from "../compeny/company.service";
 import { UserGQL } from "../user/user.resolve";

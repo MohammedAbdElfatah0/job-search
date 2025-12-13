@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import { IsDate, IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
-import { IsAdult, USER_GENDER, USER_ROLE } from "src/common";
+import { IsAdult, USER_GENDER, USER_ROLE } from "../../../common";
 import { LoginDto } from "./login-auth.dto";
 
 export class RegisterAuthDto extends LoginDto {

@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { SEND_TYPE, USER_GENDER, USER_PROVIDER, USER_ROLE } from "src/common";
+import { SEND_TYPE, USER_GENDER, USER_PROVIDER, USER_ROLE } from "../../../common";
 
 export class User {
     readonly _id: Types.ObjectId;

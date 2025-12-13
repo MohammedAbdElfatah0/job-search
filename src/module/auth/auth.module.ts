@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { userMongooseModule, UserRepository } from "src/DB";
+import { userMongooseModule, UserRepository } from "../../DB";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { AuthFactory } from "./factory";

@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { Types } from "mongoose";
-import { compereHash, generatedHash, generateExpiryTime, generateOtp, resetPasswordTemplate, sendEmailHelper, typeOtp, typeToken, USER_PROVIDER } from "src/common";
-import { TokenRepository, UserDocument, User as UserModel, UserRepository } from "src/DB";
+import { compereHash, generatedHash, generateExpiryTime, generateOtp, resetPasswordTemplate, sendEmailHelper, typeOtp, typeToken, USER_PROVIDER } from "../../common";
+import { TokenRepository, UserDocument, User as UserModel, UserRepository } from "../../DB";
 import { LoginDto, ResetPasswordDto } from "./dto";
 import { User as UserEntity } from "./entities";
 import { TokenService } from "../token/token.service";
@@ -166,7 +166,7 @@ export class AuthService {
         }
         const dbToken = await this.tokenRepo.getOne({ token: token });
         if (!dbToken || dbToken.isRevoked) throw new UnauthorizedException('Refresh token revoked');
-        const accessToken = this.tokenService.generateAccessToken({ _id: payload._id,email:payload.email });
+        const accessToken = this.tokenService.generateAccessToken({ _id: payload._id, email: payload.email });
         return { accessToken };
     }
     //login and signup

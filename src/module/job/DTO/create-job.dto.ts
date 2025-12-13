@@ -1,5 +1,5 @@
 import { IsArray, IsEnum, IsNotEmpty, IsString } from "class-validator";
-import { JOBLOCATION, SENIORITYLEVEL, WORKINGTIME } from "src/common";
+import { JOBLOCATION, SENIORITYLEVEL, WORKINGTIME } from "../../../common";
 
 export class CreateJobDto {
     @IsString({ message: 'jobTitle must be string' })

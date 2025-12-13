@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { JobOpportunity } from "./JobOpportunity.schema";
-import { AbstractRepository } from "src/DB/repository";
+import { AbstractRepository } from "../../repository";
 @Injectable()
 export class JobOpportunityRepository extends AbstractRepository<JobOpportunity> {
     constructor(

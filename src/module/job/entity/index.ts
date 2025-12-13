@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { JOBLOCATION, SENIORITYLEVEL, WORKINGTIME } from "src/common";
+import { JOBLOCATION, SENIORITYLEVEL, WORKINGTIME } from "../../../common";
 
 export class Job {
     readonly _id: Types.ObjectId;

@@ -1,11 +1,10 @@
 import { Module } from "@nestjs/common";
+import { MongooseModule } from "@nestjs/mongoose";
+import { CompanyRepository, Compeny, CompenySchema } from "../../DB";
+import { CloudinaryService } from "../../common";
+import { CompanyController } from "./company.controller";
 import { CompanyService } from "./company.service";
 import { CompanyFactoryService } from "./factory";
-import { CompanyRepository } from "src/DB/model/compeny/compeny.repository";
-import { CompanyController } from "./company.controller";
-import { MongooseModule } from "@nestjs/mongoose";
-import { Compeny, CompenySchema } from "src/DB/model/compeny/compeny.schema";
-import { CloudinaryService } from "src/common";
 
 @Module(
     {

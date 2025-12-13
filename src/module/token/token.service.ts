@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { Types } from 'mongoose';
 // import { TokenRepository, User } from 'src/DB/model';
-import { typeToken } from '../../common/utils/enum';
-import { TokenRepository } from 'src/DB/model/token/token.repository';
-import { User } from 'src/DB';
+import { typeToken } from '../../common';
+import { User } from '../../DB';
+import { TokenRepository } from '../../DB/model/token/token.repository';
 
 
 @Injectable()

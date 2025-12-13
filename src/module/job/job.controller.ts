@@ -1,10 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
-import { CreateJobDto } from "./DTO/create-job.dto";
-import { AuthGuard, Public, User } from "src/common";
-import { JobService } from "./job.service";
-import { UpdateJobDto } from "./DTO";
-import { ChangeStausDto } from "./DTO/change-status.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { AuthGuard, Public, User } from "../../common";
+import { ChangeStausDto, CreateJobDto, UpdateJobDto } from "./DTO";
+import { JobService } from "./job.service";
 
 @Controller('job')
 @UseGuards(AuthGuard)

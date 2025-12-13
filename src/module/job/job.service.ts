@@ -1,19 +1,12 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { Types } from "mongoose";
-import { User } from "src/DB";
-import { CompanyRepository } from "src/DB/model/compeny/compeny.repository";
-import { JobOpportunityRepository } from "src/DB/model/job_opportunity/JobOpportunity.repository";
-import { JobOpportunity } from "src/DB/model/job_opportunity/JobOpportunity.schema";
+import { ApplicationStatus, CloudinaryService, jobAcceptedTemplate, jobRejectedTemplate, sendEmailHelper } from "../../common";
+import { ApplicationRepository, CompanyRepository, JobOpportunity, JobOpportunityRepository, User } from "../../DB";
 import { Company } from "../compeny/entities";
-import { CreateJobDto, UpdateJobDto } from "./DTO";
-import { JobFactoryServide } from "./factory";
-import { ApplicationRepository } from "src/DB/model/application/Application.repository";
-import { JobGateway } from "./job.socket.io";
-import { ChangeStausDto } from "./DTO/change-status.dto";
-import { ApplicationStatus, CloudinaryService, sendEmailHelper } from "src/common";
 import { UserService } from "../user/user.service";
-import { jobAcceptedTemplate } from "src/common/utils/sendMailer/job_accepted_template";
-import { jobRejectedTemplate } from "src/common/utils/sendMailer/job_rejected_template";
+import { ChangeStausDto, CreateJobDto, UpdateJobDto } from "./DTO";
+import { JobFactoryServide } from "./factory";
+import { JobGateway } from "./job.socket.io";
 
 @Injectable()
 export class JobService {

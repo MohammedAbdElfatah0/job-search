@@ -1,6 +1,6 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
-import { ApplicationStatus } from "src/common";
+import { ApplicationStatus } from "../../../common";
 
 @Schema({ timestamps: true })
 export class Application {

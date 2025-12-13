@@ -1,6 +1,6 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
-import { JOBLOCATION, SENIORITYLEVEL, WORKINGTIME } from "src/common";
+import { JOBLOCATION, SENIORITYLEVEL, WORKINGTIME } from "../../../common";
 
 @Schema({ timestamps: true })
 export class JobOpportunity {

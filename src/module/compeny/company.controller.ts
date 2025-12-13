@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { AuthGuard, createMulterOptions, User } from "src/common";
+import { AuthGuard, createMulterOptions, User } from "../../common";
 import { CompanyService } from "./company.service";
 import { CreateCompanyDto, UpdateCompanyDto } from "./DTO";
 import { CompanyFactoryService } from "./factory";

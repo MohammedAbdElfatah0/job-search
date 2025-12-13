@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { User } from "src/DB";
-import { CreateCompanyDto } from "../DTO";
+import { User } from "../../../DB";
+import { CloudinaryService } from "../../../common";
+import { CreateCompanyDto, UpdateCompanyDto } from "../DTO";
 import { Company } from "../entities";
-import { CloudinaryService } from "src/common";
-import { UpdateCompanyDto } from "../DTO/update-company.dto";
 
 
 @Injectable()

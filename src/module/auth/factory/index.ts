@@ -1,7 +1,7 @@
-import { CryptoHelper, generatedHash, USER_PROVIDER } from "src/common";
-import { RegisterAuthDto } from "../dto/register-auth.dto";
-import { User } from "../entities";
 import { Injectable } from "@nestjs/common";
+import { generatedHash, USER_PROVIDER } from "../../../common";
+import { RegisterAuthDto } from "../dto";
+import { User } from "../entities";
 @Injectable()
 export class AuthFactory {
     public async register(registerDto: RegisterAuthDto) {
