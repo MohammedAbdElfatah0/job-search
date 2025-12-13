@@ -6,7 +6,7 @@ import { TransformInterceptor } from './common/interceptor';
 
 async function bootstrap() {
 
-  //todo  cron jon for deleteAt -> job , company ,user by hooks moongose , otp by every 6 dayly 
+
   const app = await NestFactory.create(AppModule, { cors: true });
   app.use(helmet());
   app.useGlobalPipes(new ValidationPipe({
