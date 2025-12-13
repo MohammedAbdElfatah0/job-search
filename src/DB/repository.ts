@@ -1,4 +1,4 @@
-import { HydratedDocument, Model, ProjectionType, QueryOptions, Types, UpdateQuery, FilterQuery } from 'mongoose';
+import { FilterQuery, HydratedDocument, Model, ProjectionType, QueryOptions, Types, UpdateQuery } from 'mongoose';
 
 export class AbstractRepository<T> {
     constructor(
@@ -9,6 +9,12 @@ export class AbstractRepository<T> {
         const doc = new this.model(item);
         return doc.save() as Promise<HydratedDocument<T>>;
     }
+    // public async createDoc(data: Partial<T>, option?: CreateOptions) {
+    //     return await this.model.create([data], option)
+    // }
+
+
+
 
     public async getOne(
         filter: FilterQuery<T>,

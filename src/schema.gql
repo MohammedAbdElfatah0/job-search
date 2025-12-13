@@ -56,7 +56,6 @@ type AdminGQL {
 
 type Query {
   displayAllData: AdminGQL!
-  sayHello: String!
 }
 
 type Mutation {
