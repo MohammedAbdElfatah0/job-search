@@ -28,10 +28,13 @@ import { AppController } from './app.controller';
     //connect with mongoose
     MongooseModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: async (configService: ConfigService) => ({
         uri: configService.get("db").url,
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
       })
     }),
+
     ThrottlerModule.forRoot({
       throttlers: [
         {

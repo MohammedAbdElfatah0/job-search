@@ -15,6 +15,8 @@ async function bootstrap() {
     transform: true,
   }))
   app.useGlobalInterceptors(new TransformInterceptor());
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3000,()=>{
+    console.log(`Application is running on port ${process.env.PORT}`);
+  });
 }
 bootstrap();
