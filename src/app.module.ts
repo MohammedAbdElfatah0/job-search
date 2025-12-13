@@ -43,6 +43,8 @@ import { CommenModule } from './shared';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       context: ({ req, res }) => ({ req, res }),
+      playground: false,
+      introspection: true,
     }),
     CommenModule,
     AuthModule,

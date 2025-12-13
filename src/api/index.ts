@@ -1,22 +1,21 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../app.module';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
-
-const server = express();
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
 let app;
 
 async function bootstrap() {
   if (!app) {
-    const nestApp = await NestFactory.create(
-      AppModule,
-      new ExpressAdapter(server),
-    );
-    await nestApp.init();
-    app = server;
+    app = await NestFactory.create(AppModule);
+    await app.init();
   }
   return app;
 }
 
-export default bootstrap();
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const app = await bootstrap();
+  const server = app.getHttpServer();
+  
+  // Handle the request
+  server.emit('request', req, res);
+}
