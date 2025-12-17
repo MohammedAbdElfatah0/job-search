@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Types } from "mongoose";
 import { User } from "../../../DB";
-import { CreateJobDto, UpdateJobDto } from "../DTO";
+import { CreateJobDto, UpdateJobDto } from "../dto";
 import { Job } from "../entity";
 
 @Injectable()

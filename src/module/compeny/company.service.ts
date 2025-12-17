@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 import { CompanyRepository } from "src/DB/model/compeny/compeny.repository";
 import { CloudinaryService } from "../../common";
 import { User } from "../../DB";
-import { CreateCompanyDto, UpdateCompanyDto } from "./DTO";
+import { CreateCompanyDto, UpdateCompanyDto } from "./dto";
 import { CompanyFactoryService } from "./factory";
 
 @Injectable()

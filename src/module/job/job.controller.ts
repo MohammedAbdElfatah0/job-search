@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthGuard, Public, User } from "../../common";
-import { ChangeStausDto, CreateJobDto, UpdateJobDto } from "./DTO";
+import { ChangeStausDto, CreateJobDto, ParamIdDto, UpdateJobDto } from "./dto";
 import { JobService } from "./job.service";
 
 @Controller('job')
@@ -12,24 +12,25 @@ export class JobController {
     ) { }
 
     @Post(":companyId")
-    async createJob(@Body() createJobDto: CreateJobDto, @Param('companyId') companyId, @User() user: any) {
-        const data = await this.jobService.createJob(createJobDto, companyId, user);
+    //check name id 
+    async createJob(@Body() createJobDto: CreateJobDto, @Param('companyId') paramIdDto: ParamIdDto, @User() user: any) {
+        const data = await this.jobService.createJob(createJobDto, paramIdDto.id, user);
         return {
             message: 'job created successfully',
             data
         }
     }
     @Put(':id')
-    async updateJob(@Body() updateJobDto: UpdateJobDto, @Param('id') id: string, @User() user: any) {
-        const data = await this.jobService.updateJob(id, updateJobDto, user);
+    async updateJob(@Body() updateJobDto: UpdateJobDto, @Param('id') paramIdDto: ParamIdDto, @User() user: any) {
+        const data = await this.jobService.updateJob(paramIdDto.id, updateJobDto, user);
         return {
             message: 'job created successfully',
             data
         }
     }
     @Delete(':id')
-    async deleteJob(@Param('id') id: string, @User() user: any) {
-        const data = await this.jobService.deleteJob(id, user);
+    async deleteJob(@Param('id') paramIdDto: ParamIdDto, @User() user: any) {
+        const data = await this.jobService.deleteJob(paramIdDto.id, user);
         return {
             message: 'job deleted successfully',
             data
@@ -38,13 +39,13 @@ export class JobController {
     @Get('company/:companyId')
     @Public()
     async getJobsForCompany(
-        @Param('companyId') companyId: string,
+        @Param('companyId') paramIdDto: ParamIdDto,
         @Query('skip') skip?: number,
         @Query('limit') limit?: number,
         @Query('sort') sort: string = '-createdAt',
     ) {
         const data = await this.jobService.GetSpecificAllJobs(
-            companyId,
+            paramIdDto.id, //  companyId,
             Number(skip),
             Number(limit),
             sort,
@@ -84,8 +85,8 @@ export class JobController {
         };
     }
     @Get('applyJob/:id')
-    public async getApplier(@Param('id') id: string, @User() user: any) {
-        const data = await this.jobService.getApplier(id, user);
+    public async getApplier(@Param('id') paramIdDto: ParamIdDto, @User() user: any) {
+        const data = await this.jobService.getApplier(paramIdDto.id, user);
         return {
             message: "all job applier",
             data
@@ -94,11 +95,11 @@ export class JobController {
     @Post('apply/:id')
     @UseInterceptors(FileInterceptor('CV'))
     async applyJob(
-        @Param('id') id: string,
+        @Param('id') paramIdDto: ParamIdDto,
         @User() user,
         @UploadedFile() CV: Express.Multer.File
     ) {
-        const data = await this.jobService.applyJob(id, user, CV);
+        const data = await this.jobService.applyJob(paramIdDto.id, user, CV);
         return {
             message: 'Job applied successfully',
             success: true,
@@ -107,11 +108,11 @@ export class JobController {
     }
     @Patch('application/status/:id')
     async changeStatus(
-        @Param('id') id: string,
+        @Param('id') paramIdDto: ParamIdDto,
         @Body() changeStatusDto: ChangeStausDto,
         @User() user,
     ) {
-        const data = await this.jobService.accpAndRejectJob(id, changeStatusDto, user);
+        const data = await this.jobService.accpAndRejectJob(paramIdDto.id, changeStatusDto, user);
         return {
             message: 'Application status updated',
             success: true,

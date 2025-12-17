@@ -2,15 +2,14 @@ import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post,
 import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthGuard, createMulterOptions, User } from "../../common";
 import { CompanyService } from "./company.service";
-import { CreateCompanyDto, UpdateCompanyDto } from "./DTO";
-import { CompanyFactoryService } from "./factory";
+import { CreateCompanyDto, UpdateCompanyDto } from "./dto";
+import { ParamIdDto } from "./dto/id.parama.dto";
 
 @Controller('company')
 @UseGuards(AuthGuard)
 export class CompanyController {
     constructor(
         private readonly companyService: CompanyService,
-        private readonly companyFactory: CompanyFactoryService,
     ) { }
 
     @Get('name')
@@ -22,8 +21,8 @@ export class CompanyController {
         }
     }
     @Get(':id')
-    async getCompanyWithJobs(@Param('id') id: string) {
-        const data = await this.companyService.getCompanyWithJobs(id);
+    async getCompanyWithJobs(@Param('id') paramIdDto: ParamIdDto) {
+        const data = await this.companyService.getCompanyWithJobs(paramIdDto.id);
         return {
             message: 'Company with jobs retrieved successfully',
             data
@@ -53,8 +52,8 @@ export class CompanyController {
         };
     }
     @Put(':id')
-    public async updateCompany(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto, @User() user: any) {
-        const data = await this.companyService.updateCompanyInfo(id, updateCompanyDto, user);
+    public async updateCompany(@Param('id') paramIdDto: ParamIdDto, @Body() updateCompanyDto: UpdateCompanyDto, @User() user: any) {
+        const data = await this.companyService.updateCompanyInfo(paramIdDto.id, updateCompanyDto, user);
         return {
             message: 'Company updated successfully',
             data
@@ -115,9 +114,9 @@ export class CompanyController {
         }
     }
     @Delete(':id')
-    public async deleteCompany(@Param('id') id: string, @User() user: any) {
+    public async deleteCompany(@Param('id') paramIdDto: ParamIdDto, @User() user: any) {
         //delete company
-        const data = await this.companyService.SoftDeleteCompany(id, user);
+        const data = await this.companyService.SoftDeleteCompany(paramIdDto.id, user);
         return {
             message: 'Company deleted successfully',
             data

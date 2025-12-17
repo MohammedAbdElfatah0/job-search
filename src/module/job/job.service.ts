@@ -4,7 +4,7 @@ import { ApplicationStatus, CloudinaryService, jobAcceptedTemplate, jobRejectedT
 import { ApplicationRepository, CompanyRepository, JobOpportunity, JobOpportunityRepository, User } from "../../DB";
 import { Company } from "../compeny/entities";
 import { UserService } from "../user/user.service";
-import { ChangeStausDto, CreateJobDto, UpdateJobDto } from "./DTO";
+import { ChangeStausDto, CreateJobDto, UpdateJobDto } from "./dto";
 import { JobFactoryServide } from "./factory";
 import { JobGateway } from "./job.socket.io";
 
