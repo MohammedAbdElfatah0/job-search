@@ -6,15 +6,16 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { join } from 'path';
+import { AppController } from './app.controller';
 import { GqlThrottlerGuard } from './common/guard/graphql.throttler.guard';
 import { CloudinaryProvider } from './config';
 import configLoad from './config/env/env.dev';
 import { AuthModule, UserModule } from './module';
 import { AdminModule } from './module/admin/admin.module';
 import { CompanyModule } from './module/compeny/company.module';
+import { RealTimeModule } from './module/gateway/gateway.module';
 import { JobModule } from './module/job/job.module';
 import { CommenModule } from './shared';
-import { AppController } from './app.controller';
 @Module({
   imports: [
     //connect with .env
@@ -56,7 +57,9 @@ import { AppController } from './app.controller';
     UserModule,
     CompanyModule,
     JobModule,
-    AdminModule
+    AdminModule,
+    //socketio
+    RealTimeModule
   ],
   controllers: [
     AppController
