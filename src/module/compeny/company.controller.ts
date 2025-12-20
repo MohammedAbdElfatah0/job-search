@@ -3,7 +3,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthGuard, createMulterOptions, User } from "../../common";
 import { CompanyService } from "./company.service";
 import { CreateCompanyDto, UpdateCompanyDto } from "./dto";
-import { ParamIdDto } from "./dto/id.parama.dto";
+import { ParamsIdDto } from "./dto/id.parama.dto";
 
 @Controller('company')
 @UseGuards(AuthGuard)
@@ -21,8 +21,8 @@ export class CompanyController {
         }
     }
     @Get(':id')
-    async getCompanyWithJobs(@Param('id') paramIdDto: ParamIdDto) {
-        const data = await this.companyService.getCompanyWithJobs(paramIdDto.id);
+    async getCompanyWithJobs(@Param() paramsIdDto: ParamsIdDto) {
+        const data = await this.companyService.getCompanyWithJobs(paramsIdDto.id);
         return {
             message: 'Company with jobs retrieved successfully',
             data
@@ -52,7 +52,7 @@ export class CompanyController {
         };
     }
     @Put(':id')
-    public async updateCompany(@Param('id') paramIdDto: ParamIdDto, @Body() updateCompanyDto: UpdateCompanyDto, @User() user: any) {
+    public async updateCompany(@Param() paramIdDto: ParamsIdDto, @Body() updateCompanyDto: UpdateCompanyDto, @User() user: any) {
         const data = await this.companyService.updateCompanyInfo(paramIdDto.id, updateCompanyDto, user);
         return {
             message: 'Company updated successfully',
@@ -114,9 +114,9 @@ export class CompanyController {
         }
     }
     @Delete(':id')
-    public async deleteCompany(@Param('id') paramIdDto: ParamIdDto, @User() user: any) {
+    public async deleteCompany(@Param() paramsIdDto: ParamsIdDto, @User() user: any) {
         //delete company
-        const data = await this.companyService.SoftDeleteCompany(paramIdDto.id, user);
+        const data = await this.companyService.SoftDeleteCompany(paramsIdDto.id, user);
         return {
             message: 'Company deleted successfully',
             data

@@ -1,9 +1,7 @@
-import { IsMongoId, IsNotEmpty } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsMongoId, IsNotEmpty } from "class-validator";
 
-export class ParamIdDto {
-    @IsMongoId({ message: 'Invalid MongoDB ID format' })
-    @IsNotEmpty({ message: 'ID is required' })
-    @Transform(({ value }) => value?.trim()) 
+export class ParamsIdDto {
+    @IsMongoId({ message: "Id must be a valid MongoDB ID" })
+    @IsNotEmpty({ message: "Id is required" })
     id: string;
 }

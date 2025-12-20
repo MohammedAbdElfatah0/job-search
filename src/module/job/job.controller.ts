@@ -11,9 +11,9 @@ export class JobController {
         private readonly jobService: JobService,
     ) { }
 
-    @Post(":companyId")
+    @Post(":id")//id of company
     //check name id 
-    async createJob(@Body() createJobDto: CreateJobDto, @Param('companyId') paramIdDto: ParamIdDto, @User() user: any) {
+    async createJob(@Body() createJobDto: CreateJobDto, @Param() paramIdDto: ParamIdDto, @User() user: any) {
         const data = await this.jobService.createJob(createJobDto, paramIdDto.id, user);
         return {
             message: 'job created successfully',
@@ -21,7 +21,7 @@ export class JobController {
         }
     }
     @Put(':id')
-    async updateJob(@Body() updateJobDto: UpdateJobDto, @Param('id') paramIdDto: ParamIdDto, @User() user: any) {
+    async updateJob(@Body() updateJobDto: UpdateJobDto, @Param() paramIdDto: ParamIdDto, @User() user: any) {
         const data = await this.jobService.updateJob(paramIdDto.id, updateJobDto, user);
         return {
             message: 'job created successfully',
@@ -29,17 +29,17 @@ export class JobController {
         }
     }
     @Delete(':id')
-    async deleteJob(@Param('id') paramIdDto: ParamIdDto, @User() user: any) {
+    async deleteJob(@Param() paramIdDto: ParamIdDto, @User() user: any) {
         const data = await this.jobService.deleteJob(paramIdDto.id, user);
         return {
             message: 'job deleted successfully',
             data
         }
     }
-    @Get('company/:companyId')
+    @Get(':id/company')//id of company
     @Public()
     async getJobsForCompany(
-        @Param('companyId') paramIdDto: ParamIdDto,
+        @Param() paramIdDto: ParamIdDto,
         @Query('skip') skip?: number,
         @Query('limit') limit?: number,
         @Query('sort') sort: string = '-createdAt',
@@ -85,7 +85,7 @@ export class JobController {
         };
     }
     @Get('applyJob/:id')
-    public async getApplier(@Param('id') paramIdDto: ParamIdDto, @User() user: any) {
+    public async getApplier(@Param() paramIdDto: ParamIdDto, @User() user: any) {
         const data = await this.jobService.getApplier(paramIdDto.id, user);
         return {
             message: "all job applier",
@@ -95,7 +95,7 @@ export class JobController {
     @Post('apply/:id')
     @UseInterceptors(FileInterceptor('CV'))
     async applyJob(
-        @Param('id') paramIdDto: ParamIdDto,
+        @Param() paramIdDto: ParamIdDto,
         @User() user,
         @UploadedFile() CV: Express.Multer.File
     ) {
@@ -108,7 +108,7 @@ export class JobController {
     }
     @Patch('application/status/:id')
     async changeStatus(
-        @Param('id') paramIdDto: ParamIdDto,
+        @Param() paramIdDto: ParamIdDto,
         @Body() changeStatusDto: ChangeStausDto,
         @User() user,
     ) {

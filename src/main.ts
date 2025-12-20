@@ -2,7 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
-import { TransformInterceptor } from './common/interceptor';
+import { LoggingInterceptor, TransformInterceptor } from './common/interceptor';
 
 async function bootstrap() {
 
@@ -14,8 +14,8 @@ async function bootstrap() {
     whitelist: true,
     transform: true,
   }))
-  app.useGlobalInterceptors(new TransformInterceptor());
-  await app.listen(process.env.PORT ?? 3000,()=>{
+  app.useGlobalInterceptors(new TransformInterceptor(), new LoggingInterceptor());
+  await app.listen(process.env.PORT ?? 3000, () => {
     console.log(`Application is running on port ${process.env.PORT}`);
   });
 }

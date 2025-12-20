@@ -103,7 +103,7 @@ export class AuthGuard implements CanActivate {
             this.throwErrorAuthorized(context.getType<string>(), "Invalid Refresh Token");
 
         // verify user exists
-        const user = await this.userRepo.getOne({ email: accessToken.email   });
+        const user = await this.userRepo.getOne({ email: accessToken.email });
         if (!user)
             this.throwErrorNotFound(context.getType<string>(), "user not found");
 
@@ -112,8 +112,13 @@ export class AuthGuard implements CanActivate {
             this.throwErrorAuthorized(context.getType<string>(), "Invalid Refresh Token");
 
 
-        console.log(user);
-        req.user = user;
+        // console.log(user);
+        if (context.getType<string>() === 'ws') {
+            const client = context.switchToWs().getClient();
+            client.data.user = user;
+        } else {
+            req.user = user;
+        }
         return true;
     }
 }

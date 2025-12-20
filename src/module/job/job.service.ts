@@ -90,9 +90,13 @@ export class JobService {
     public async GetSpecificAllJobs(companyId: string | Types.ObjectId, skip: number = 0, limit: number = 10, sort: string = '-createdAt') {
 
         const compId = new Types.ObjectId(companyId);
+        const companyExist = await this.companyRepository.getOne({ _id: compId, deletedAt: { $exists: false } });
+        if (!companyExist) {
+            throw new NotFoundException('company not found');
+        }
         const data = await this.jobRepository.getAll(
-            { companyId: compId },
-            // { companyId: companyId },
+            // { companyId: compId },
+            { companyId: companyId },
             {},
             { skip, limit, sort, populate: [{ path: 'companyId', select: "-bannedAt -legalAttachment -approvedByAdmin" }] }
         );
@@ -124,7 +128,7 @@ export class JobService {
     }
 
 
-    
+//applier get all applier for job
     public async getApplier(id: string | Types.ObjectId, user: User) {
         const jobExist = await this.jobRepository.getOne(
             { _id: id, closed: false, deletedAt: { $exists: false } },
