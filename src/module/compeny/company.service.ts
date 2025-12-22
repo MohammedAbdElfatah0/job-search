@@ -73,7 +73,7 @@ export class CompanyService {
             companyExist.logo && this.deleteImageLogo(user),
             this.cloudinaryService.deleteEntireFolder(`JobSearch/${user._id}/company/`),
         ]);
-        const deletedCompany = await this.companyRepository.softDeleteOne(id, { deletedAt: Date.now() },);
+        const deletedCompany = await this.companyRepository.softDeleteOne(id, { deletedAt: Date.now() + (7 * 24 * 60 * 60 * 1000) },);
         return deletedCompany;
     }
     //working as get all and get by search

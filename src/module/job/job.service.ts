@@ -76,8 +76,9 @@ export class JobService {
         }
         this.isHRForJob(jobExist, user);
         //delete
+        const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
         const deletedJob = await this.jobRepository.softDeleteOne(id, {
-            deletedAt: Date.now()
+            deletedAt: Date.now() + oneWeekInMs
         });
         if (!deletedJob) {
             throw new ConflictException('can\'t delete job now');
@@ -128,7 +129,7 @@ export class JobService {
     }
 
 
-//applier get all applier for job
+    //applier get all applier for job
     public async getApplier(id: string | Types.ObjectId, user: User) {
         const jobExist = await this.jobRepository.getOne(
             { _id: id, closed: false, deletedAt: { $exists: false } },
@@ -233,6 +234,7 @@ export class JobService {
         }
         applicationApply.status = changeStatusDto.status;
         applicationApply.reason = changeStatusDto.reason;
+        applicationApply.deleteAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
         await applicationApply.save();
         return applicationApply;
 

@@ -16,6 +16,8 @@ import { CompanyModule } from './module/compeny/company.module';
 import { RealTimeModule } from './module/gateway/gateway.module';
 import { JobModule } from './module/job/job.module';
 import { CommenModule } from './shared';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksModule } from './module/tasks/tasks.module';
 @Module({
   imports: [
     //connect with .env
@@ -44,6 +46,10 @@ import { CommenModule } from './shared';
         },
       ],
     }),
+    //cron job
+    ScheduleModule.forRoot(),
+    TasksModule,
+    //graphql
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       // autoSchemaFile: true,

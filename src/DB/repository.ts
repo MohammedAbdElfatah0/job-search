@@ -1,4 +1,4 @@
-import { FilterQuery, HydratedDocument, Model, ProjectionType, QueryOptions, Types, UpdateQuery } from 'mongoose';
+import { FilterQuery, HydratedDocument, Model, ProjectionType, QueryOptions, RootFilterQuery, Types, UpdateQuery, UpdateWriteOpResult } from 'mongoose';
 
 export class AbstractRepository<T> {
     constructor(
@@ -35,6 +35,14 @@ export class AbstractRepository<T> {
         }).exec();
     }
 
+    public async updateMany(
+        filter: FilterQuery<T>,
+        updateQuery: UpdateQuery<T>,
+        option?: QueryOptions
+    ): Promise<UpdateWriteOpResult> {
+        return this.model.updateMany(filter, updateQuery, option as any).exec();
+    }
+
     public async getAll(
         filter: FilterQuery<T>,
         projection?: ProjectionType<T>,
@@ -56,6 +64,11 @@ export class AbstractRepository<T> {
     public async hardDelete(id: string | Types.ObjectId): Promise<boolean> {
         const result = await this.model.deleteOne({ _id: id }).exec();
         return result.deletedCount > 0;
+    }
+
+    public async deleteMany(filter?: RootFilterQuery<T>): Promise<{ deletedCount: number }> {
+        const result = await this.model.deleteMany(filter).exec();
+        return { deletedCount: result.deletedCount };
     }
 
 }

@@ -38,6 +38,9 @@ export class Application {
         type: String,
     })
     reason: string;
+
+    @Prop({ type: Date })
+    deleteAt: Date;
 }
 
 export type ApplicationDocument = Application & Document;
